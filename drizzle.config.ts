@@ -1,6 +1,5 @@
-import { type Config } from "drizzle-kit";
-
-import { env } from "@/env";
+import { env } from "@/env"
+import { type Config } from "drizzle-kit"
 
 export default {
   schema: "./src/server/db/schema.ts",
@@ -9,4 +8,4 @@ export default {
     url: env.DATABASE_URL,
   },
   tablesFilter: ["kyoumi_*"],
-} satisfies Config;
+} satisfies Config
