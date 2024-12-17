@@ -41,7 +41,7 @@ export const api = createTRPCNext<AppRouter>({
 						if (err instanceof TRPCClientError) {
 							const error = err as TRPCClientError<AppRouter>;
 							if (error.data?.code === 'UNAUTHORIZED') {
-								window.location.href = '/login';
+								window.location.href = '/login?expired=true';
 							}
 						}
 					},
@@ -52,7 +52,7 @@ export const api = createTRPCNext<AppRouter>({
 							const error = err as TRPCClientError<AppRouter>;
 							if (error.data?.code === 'UNAUTHORIZED') {
 								if (error.data.path != 'auth.login') {
-									window.location.href = '/login';
+									window.location.href = '/login?expired=true';
 								}
 							}
 							toast.error(error.message);
