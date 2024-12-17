@@ -1,9 +1,9 @@
 // Example model schema from the Drizzle docs
 // https://orm.drizzle.team/docs/sql-schema-declaration
 
-import { sql } from "drizzle-orm"
-import { int, sqliteTableCreator, text } from "drizzle-orm/sqlite-core"
-import { v4 } from "uuid"
+import { relations, sql } from 'drizzle-orm';
+import { int, sqliteTableCreator, text } from 'drizzle-orm/sqlite-core';
+import { v4 } from 'uuid';
 
 /**
  * This is an example of how to use the multi-project schema feature of Drizzle ORM. Use the same
@@ -11,27 +11,83 @@ import { v4 } from "uuid"
  *
  * @see https://orm.drizzle.team/docs/goodies#multi-project-schema
  */
-export const createTable = sqliteTableCreator((name) => `kyoumi_${name}`)
+export const createTable = sqliteTableCreator((name) => `kyoumi_${name}`);
 
-export const users = createTable("user", {
-  id: text("id").primaryKey().$default(v4),
-  admin: int("admin", { mode: "boolean" }),
-})
+export const users = createTable('users', {
+	id: text('id').primaryKey().$default(v4),
+	admin: int('admin', { mode: 'boolean' }),
+});
 
-export const cards = createTable("card", {
-  id: int("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
-  name: text("title", { length: 256 }).notNull(),
-  content: text("content", { mode: "json" }).notNull(),
-  topic: text("topic", {
-    enum: ["pain-point", "brown-bag", "new-idea", "improvement", "fun"],
-  }).notNull(),
-  importance: int("importance", { mode: "number" }).default(0),
-  complete: int("complete", { mode: "boolean" }),
-  cloak: int("cloak", { mode: "boolean" }),
-  createdAt: int("created_at", { mode: "timestamp" })
-    .default(sql`(unixepoch())`)
-    .notNull(),
-  updatedAt: int("updated_at", { mode: "timestamp" }).$onUpdate(
-    () => new Date()
-  ),
-})
+export const posts = createTable('posts', {
+	id: int('id', { mode: 'number' }).primaryKey({ autoIncrement: true }),
+	name: text('title', { length: 30 }).notNull(),
+	content: text('content', { mode: 'json' }).notNull(),
+	topic: text('topic', {
+		enum: ['pain-point', 'brown-bag', 'new-idea', 'improvement', 'fun'],
+	}).notNull(),
+	complete: int('complete', { mode: 'boolean' }),
+	cloak: int('cloak', { mode: 'boolean' }),
+	authorId: text('author_id').notNull(),
+	createdAt: int('created_at', { mode: 'timestamp' })
+		.default(sql`(unixepoch())`)
+		.notNull(),
+	updatedAt: int('updated_at', { mode: 'timestamp' }).$onUpdate(
+		() => new Date()
+	),
+});
+export const likes = createTable('likes', {
+	id: int('id', { mode: 'number' }).primaryKey({ autoIncrement: true }),
+	authorId: text('author_id')
+		.notNull()
+		.references(() => users.id, { onDelete: 'cascade' }),
+	postId: int('post_id')
+		.notNull()
+		.references(() => posts.id, { onDelete: 'cascade' }),
+});
+
+export const bookmarks = createTable('bookmarks', {
+	id: int('id', { mode: 'number' }).primaryKey({ autoIncrement: true }),
+	authorId: text('author_id')
+		.notNull()
+		.references(() => users.id, { onDelete: 'cascade' }),
+	postId: int('post_id')
+		.notNull()
+		.references(() => posts.id, { onDelete: 'cascade' }),
+});
+
+export const usersRelations = relations(users, ({ many }) => ({
+	posts: many(posts),
+	likes: many(likes),
+	bookmarks: many(bookmarks),
+}));
+
+export const postsRelations = relations(posts, ({ one, many }) => ({
+	author: one(users, {
+		fields: [posts.authorId],
+		references: [users.id],
+	}),
+	likes: many(likes),
+	bookmarks: many(bookmarks),
+}));
+
+export const likesRelations = relations(likes, ({ one }) => ({
+	user: one(users, {
+		fields: [likes.authorId],
+		references: [users.id],
+	}),
+	post: one(posts, {
+		fields: [likes.postId],
+		references: [posts.id],
+	}),
+}));
+
+export const bookmarksRelations = relations(bookmarks, ({ one }) => ({
+	user: one(users, {
+		fields: [bookmarks.authorId],
+		references: [users.id],
+	}),
+	post: one(posts, {
+		fields: [bookmarks.postId],
+		references: [posts.id],
+	}),
+}));

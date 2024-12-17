@@ -6,15 +6,14 @@
  * TL;DR - This is where all the tRPC server stuff is created and plugged in. The pieces you will
  * need to use are documented accordingly near the end.
  */
-import { db } from "@/server/db"
-import { initTRPC, TRPCError } from "@trpc/server"
-import { type CreateNextContextOptions } from "@trpc/server/adapters/next"
-import { eq } from "drizzle-orm"
-import { parseCookies } from "oslo/cookie"
-import superjson from "superjson"
-import { ZodError } from "zod"
-
-import { users } from "../db/schema"
+import { db } from '@/server/db';
+import { initTRPC, TRPCError } from '@trpc/server';
+import { type CreateNextContextOptions } from '@trpc/server/adapters/next';
+import { eq } from 'drizzle-orm';
+import { parseCookies } from 'oslo/cookie';
+import superjson from 'superjson';
+import { ZodError } from 'zod';
+import { users } from '../db/schema';
 
 /**
  * 1. CONTEXT
@@ -25,8 +24,8 @@ import { users } from "../db/schema"
  */
 
 type CreateContextOptions = {
-  userId: string | null
-}
+	userId: string | null;
+};
 
 /**
  * This helper generates the "internals" for a tRPC context. If you need to use it, you can export
@@ -39,11 +38,11 @@ type CreateContextOptions = {
  * @see https://create.t3.gg/en/usage/trpc#-serverapitrpcts
  */
 const createInnerTRPCContext = (opts: CreateContextOptions) => {
-  return {
-    userId: opts.userId,
-    db,
-  }
-}
+	return {
+		userId: opts.userId,
+		db,
+	};
+};
 
 /**
  * This is the actual context you will use in your router. It will be used to process every request
@@ -52,18 +51,18 @@ const createInnerTRPCContext = (opts: CreateContextOptions) => {
  * @see https://trpc.io/docs/context
  */
 export const createTRPCContext = (opts: CreateNextContextOptions) => {
-  const { req, res } = opts
+	const { req, res } = opts;
 
-  const cookies = parseCookies(req.headers.cookie ?? "")
+	const cookies = parseCookies(req.headers.cookie ?? '');
 
-  return {
-    req,
-    res,
-    ...createInnerTRPCContext({
-      userId: cookies.get("device-id") ?? null,
-    }),
-  }
-}
+	return {
+		req,
+		res,
+		...createInnerTRPCContext({
+			userId: cookies.get('device-id') ?? null,
+		}),
+	};
+};
 
 /**
  * 2. INITIALIZATION
@@ -74,25 +73,25 @@ export const createTRPCContext = (opts: CreateNextContextOptions) => {
  */
 
 const t = initTRPC.context<typeof createTRPCContext>().create({
-  transformer: superjson,
-  errorFormatter({ shape, error }) {
-    return {
-      ...shape,
-      data: {
-        ...shape.data,
-        zodError:
-          error.cause instanceof ZodError ? error.cause.flatten() : null,
-      },
-    }
-  },
-})
+	transformer: superjson,
+	errorFormatter({ shape, error }) {
+		return {
+			...shape,
+			data: {
+				...shape.data,
+				zodError:
+					error.cause instanceof ZodError ? error.cause.flatten() : null,
+			},
+		};
+	},
+});
 
 /**
  * Create a server-side caller.
  *
  * @see https://trpc.io/docs/server/server-side-calls
  */
-export const createCallerFactory = t.createCallerFactory
+export const createCallerFactory = t.createCallerFactory;
 
 /**
  * 3. ROUTER & PROCEDURE (THE IMPORTANT BIT)
@@ -106,7 +105,7 @@ export const createCallerFactory = t.createCallerFactory
  *
  * @see https://trpc.io/docs/router
  */
-export const createTRPCRouter = t.router
+export const createTRPCRouter = t.router;
 
 /**
  * Middleware for timing procedure execution and adding an artificial delay in development.
@@ -115,21 +114,21 @@ export const createTRPCRouter = t.router
  * network latency that would occur in production but not in local development.
  */
 const timingMiddleware = t.middleware(async ({ next, path }) => {
-  const start = Date.now()
+	const start = Date.now();
 
-  if (t._config.isDev) {
-    // artificial delay in dev
-    const waitMs = Math.floor(Math.random() * 400) + 100
-    await new Promise((resolve) => setTimeout(resolve, waitMs))
-  }
+	if (t._config.isDev) {
+		// artificial delay in dev
+		const waitMs = Math.floor(Math.random() * 400) + 100;
+		await new Promise((resolve) => setTimeout(resolve, waitMs));
+	}
 
-  const result = await next()
+	const result = await next();
 
-  const end = Date.now()
-  console.log(`[TRPC] ${path} took ${end - start}ms to execute`)
+	const end = Date.now();
+	console.log(`[TRPC] ${path} took ${end - start}ms to execute`);
 
-  return result
-})
+	return result;
+});
 
 /**
  * Public (unauthenticated) procedure
@@ -138,7 +137,7 @@ const timingMiddleware = t.middleware(async ({ next, path }) => {
  * guarantee that a user querying is authorized, but you can still access user session data if they
  * are logged in.
  */
-export const publicProcedure = t.procedure.use(timingMiddleware)
+export const publicProcedure = t.procedure.use(timingMiddleware);
 
 /**
  * Protected (authenticated) procedure
@@ -149,19 +148,19 @@ export const publicProcedure = t.procedure.use(timingMiddleware)
  * @see https://trpc.io/docs/procedures
  */
 export const protectedProcedure = t.procedure
-  .use(timingMiddleware)
-  .use(async ({ ctx, next }) => {
-    const user = await ctx.db.query.users.findFirst({
-      where: eq(users.id, ctx.userId ?? ""),
-    })
+	.use(timingMiddleware)
+	.use(async ({ ctx, next }) => {
+		const user = await ctx.db.query.users.findFirst({
+			where: eq(users.id, ctx.userId ?? ''),
+		});
 
-    if (!user) {
-      throw new TRPCError({ code: "UNAUTHORIZED" })
-    }
+		if (!user) {
+			throw new TRPCError({ code: 'UNAUTHORIZED' });
+		}
 
-    return next({
-      ctx: {
-        userId: user.id,
-      },
-    })
-  })
+		return next({
+			ctx: {
+				userId: user.id,
+			},
+		});
+	});
