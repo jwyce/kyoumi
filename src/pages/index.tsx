@@ -33,13 +33,7 @@ export default function Home() {
 					height={200}
 					className="rounded-md"
 				/>
-				<h1
-					className="bg-gradient-to-br bg-clip-text text-center text-9xl font-bold text-transparent"
-					style={{
-						backgroundImage:
-							'linear-gradient(to bottom right, white 20%, #ea3c7a 70%, #ac1c5b 80%)',
-					}}
-				>
+				<h1 className="bg-[linear-gradient(to_bottom_right,_black_20%,_#ea3c7a_70%,_#ac1c5b_80%)] bg-clip-text text-center text-9xl font-bold text-transparent dark:bg-[linear-gradient(to_bottom_right,_white_20%,_#ea3c7a_70%,_#ac1c5b_80%)]">
 					<span className="block text-6xl">kyoumi</span>
 					<span className="block">興味</span>
 				</h1>

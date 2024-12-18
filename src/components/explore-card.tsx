@@ -12,6 +12,7 @@ import {
 import type { AppRouter } from '@/server/api/root';
 import type { Content } from '@tiptap/react';
 import type { inferRouterOutputs } from '@trpc/server';
+import { api } from '@/utils/api';
 import { cn } from '@/lib/utils';
 import { getRelativeTimeStrict } from '@/lib/utils/relativeTime';
 import {
@@ -88,12 +89,31 @@ export function TopicIcon({ topic }: { topic: Post['topic'] }) {
 
 export interface ExploreCardProps {
 	post: Post;
+	me: string;
 }
 export function ExploreCard({
 	post,
+	me,
 	className,
 }: ExploreCardProps & { className?: string }) {
 	const content = post.content as Content;
+
+	const utils = api.useUtils();
+
+	async function onSettled() {
+		await utils.post.getPost.invalidate({ slug: post.slug! });
+		return await utils.post.getLatest.invalidate();
+	}
+
+	const like = api.post.like.useMutation({ onSettled });
+	const bookmark = api.post.bookmark.useMutation({ onSettled });
+
+	const likedByMe = like.isPending
+		? !post.likes.some((like) => like.authorId === me)
+		: post.likes.some((like) => like.authorId === me);
+	const bookmarkedByMe = bookmark.isPending
+		? !post.bookmarks.some((like) => like.authorId === me)
+		: post.bookmarks.some((like) => like.authorId === me);
 
 	return (
 		<Card
@@ -118,22 +138,61 @@ export function ExploreCard({
 						)}
 						<Tooltip>
 							<TooltipTrigger asChild>
-								<button className="group flex items-center text-sm transition-colors duration-300 hover:text-sky-500">
+								<button
+									className={cn(
+										'group flex items-center text-sm transition-colors duration-300 hover:text-sky-500',
+										{ 'text-sky-500': bookmarkedByMe }
+									)}
+									onClick={async (e) => {
+										e.preventDefault();
+										await bookmark.mutateAsync({ id: post.id });
+									}}
+								>
 									<div className="rounded-full p-2 group-hover:bg-sky-500/10">
-										<Bookmark size={18} />
+										<Bookmark
+											size={18}
+											className={cn({ 'fill-sky-500': bookmarkedByMe })}
+										/>
 									</div>
-									<span className="-ml-1">{post.bookmarks.length}</span>
+									{bookmark.isPending ? (
+										<span className="-ml-1">
+											{post.bookmarks.length + (bookmarkedByMe ? 1 : -1)}
+										</span>
+									) : (
+										<span className="-ml-1">{post.bookmarks.length}</span>
+									)}
 								</button>
 							</TooltipTrigger>
 							<TooltipContent>Bookmark</TooltipContent>
 						</Tooltip>
 						<Tooltip>
 							<TooltipTrigger asChild>
-								<button className="group flex items-center text-sm transition-colors duration-300 hover:text-pink-600">
+								<button
+									className={cn(
+										'group flex items-center text-sm transition-colors duration-300 hover:text-pink-600',
+										{
+											'text-pink-600': likedByMe,
+										}
+									)}
+									onClick={async (e) => {
+										e.preventDefault();
+										await like.mutateAsync({ id: post.id });
+									}}
+								>
 									<div className="rounded-full p-2 group-hover:bg-pink-600/10">
-										<Heart size={18} />
+										<Heart
+											size={18}
+											className={cn({ 'fill-pink-600': likedByMe })}
+										/>
 									</div>
-									<span className="-ml-1">{post.likes.length}</span>
+
+									{like.isPending ? (
+										<span className="-ml-1">
+											{post.likes.length + (likedByMe ? 1 : -1)}
+										</span>
+									) : (
+										<span className="-ml-1">{post.likes.length}</span>
+									)}
 								</button>
 							</TooltipTrigger>
 							<TooltipContent>Like</TooltipContent>

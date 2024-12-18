@@ -1,6 +1,6 @@
 import { createTRPCRouter, protectedProcedure } from '@/server/api/trpc';
-import { posts } from '@/server/db/schema';
-import { eq } from 'drizzle-orm';
+import { bookmarks, likes, posts } from '@/server/db/schema';
+import { and, eq } from 'drizzle-orm';
 import { z } from 'zod';
 
 export const postRouter = createTRPCRouter({
@@ -56,5 +56,51 @@ export const postRouter = createTRPCRouter({
 			)[0];
 
 			return post;
+		}),
+	like: protectedProcedure
+		.input(z.object({ id: z.number() }))
+		.mutation(async ({ input, ctx }) => {
+			const like = await ctx.db.query.likes.findFirst({
+				where: and(eq(likes.postId, input.id), eq(likes.authorId, ctx.userId)),
+			});
+
+			if (like) {
+				await ctx.db
+					.delete(likes)
+					.where(
+						and(eq(likes.postId, input.id), eq(likes.authorId, ctx.userId))
+					);
+			} else {
+				await ctx.db.insert(likes).values({
+					postId: input.id,
+					authorId: ctx.userId,
+				});
+			}
+		}),
+	bookmark: protectedProcedure
+		.input(z.object({ id: z.number() }))
+		.mutation(async ({ input, ctx }) => {
+			const bookmark = await ctx.db.query.bookmarks.findFirst({
+				where: and(
+					eq(bookmarks.postId, input.id),
+					eq(bookmarks.authorId, ctx.userId)
+				),
+			});
+
+			if (bookmark) {
+				await ctx.db
+					.delete(bookmarks)
+					.where(
+						and(
+							eq(bookmarks.postId, input.id),
+							eq(bookmarks.authorId, ctx.userId)
+						)
+					);
+			} else {
+				await ctx.db.insert(bookmarks).values({
+					postId: input.id,
+					authorId: ctx.userId,
+				});
+			}
 		}),
 });
