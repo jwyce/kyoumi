@@ -1,5 +1,10 @@
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
+import { toast } from 'sonner';
+import type { AppRouter } from '@/server/api/root';
 import type { Content } from '@tiptap/react';
+import type { inferRouterInputs } from '@trpc/server';
+import { api } from '@/utils/api';
 import { Button } from '@/components/ui/button';
 import {
 	Dialog,
@@ -50,12 +55,20 @@ function extractLinksFromTiptapJson(doc: Content) {
 	return links;
 }
 
+type RouterInput = inferRouterInputs<AppRouter>;
+type PostCreateInput = RouterInput['post']['create'];
+
 export const AddPostButton = ({ children }: Props) => {
-	const [value, setValue] = useState<Content>('');
+	const [title, setTitle] = useState<string | undefined>();
+	const [topic, setTopic] = useState<PostCreateInput['topic'] | undefined>();
+	const [content, setContent] = useState<Content>(null);
+
+	const post = api.post.create.useMutation();
+	const router = useRouter();
 
 	useEffect(
-		() => console.log({ links: extractLinksFromTiptapJson(value) }),
-		[value]
+		() => console.log({ links: extractLinksFromTiptapJson(content) }),
+		[content]
 	);
 
 	return (
@@ -64,18 +77,28 @@ export const AddPostButton = ({ children }: Props) => {
 			<DialogContent>
 				<DialogHeader>
 					<DialogTitle>Create a new post</DialogTitle>
-					<DialogDescription>Fill in the form below to create a new post</DialogDescription>
+					<DialogDescription>
+						Fill in the form below to create a new post
+					</DialogDescription>
 				</DialogHeader>
 				<div className="flex flex-col items-center gap-4">
 					<div className="flex w-full gap-4">
 						<div className="flex w-full flex-col gap-2">
 							<Label htmlFor="title">Title</Label>
-							<Input id="title" placeholder="Title" />
+							<Input
+								id="title"
+								placeholder="Title"
+								value={title}
+								onChange={(e) => setTitle(e.target.value)}
+							/>
 						</div>
 
 						<div className="flex w-full flex-1 flex-col gap-2">
 							<Label htmlFor="topic">Topic</Label>
-							<Select>
+							<Select
+								value={topic}
+								onValueChange={(v) => setTopic(v as PostCreateInput['topic'])}
+							>
 								<SelectTrigger className="w-[180px]" id="topic">
 									<SelectValue placeholder="Select a topic" />
 								</SelectTrigger>
@@ -94,19 +117,34 @@ export const AddPostButton = ({ children }: Props) => {
 					</div>
 
 					<MinimalTiptapEditor
-						value={value}
-						onChange={setValue}
+						value={content}
+						onChange={setContent}
 						className="w-full"
 						editorContentClassName="p-5"
 						output="json"
-						placeholder="Type your description here..."
+						placeholder="What's up?"
 						autofocus={true}
 						editable={true}
 						editorClassName="focus:outline-none"
 					/>
 				</div>
 				<DialogFooter>
-					<Button type="submit">Post</Button>
+					<Button
+						type="submit"
+						onClick={async () => {
+							if (!title || !topic || !content) {
+								toast.error('Please fill in all fields');
+								return;
+							}
+
+							const newPost = await post.mutateAsync({ title, topic, content });
+							if (newPost) {
+								await router.push(`/post/${newPost.slug}`);
+							}
+						}}
+					>
+						Post
+					</Button>
 				</DialogFooter>
 			</DialogContent>
 		</Dialog>

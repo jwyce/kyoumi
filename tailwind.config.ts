@@ -19,6 +19,7 @@ export default {
 				foreground: 'hsl(var(--foreground))',
 				card: {
 					DEFAULT: 'hsl(var(--card))',
+					hovered: 'hsl(var(--card-hovered))',
 					foreground: 'hsl(var(--card-foreground))',
 				},
 				popover: {
@@ -55,6 +56,18 @@ export default {
 					'4': 'hsl(var(--chart-4))',
 					'5': 'hsl(var(--chart-5))',
 				},
+				'topic-fun': 'hsl(var(--topic-fun) / <alpha-value>)',
+				'topic-improvement': 'hsl(var(--topic-improvement) / <alpha-value>)',
+				'topic-brown-bag': 'hsl(var(--topic-brown-bag) / <alpha-value>)',
+				'topic-pain-point': 'hsl(var(--topic-pain-point) / <alpha-value>)',
+				'topic-new-idea': 'hsl(var(--topic-new-idea) / <alpha-value>)',
+			},
+			boxShadow: {
+				fun: '0 0 1rem -0.15rem hsl(var(--topic-fun))',
+				improvement: '0 0 1rem -0.15rem hsl(var(--topic-improvement))',
+				'brown-bag': '0 0 1rem -0.15rem hsl(var(--topic-brown-bag)',
+				'pain-point': '0 0 1rem -0.15rem hsl(var(--topic-pain-point))',
+				'new-idea': '0 0 1rem -0.15rem hsl(var(--topic-new-idea))',
 			},
 		},
 	},

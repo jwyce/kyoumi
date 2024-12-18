@@ -3,7 +3,6 @@ import Link from 'next/link';
 import { Compass, PlusCircle } from 'lucide-react';
 import { parseCookies } from 'oslo/cookie';
 import type { GetServerSidePropsContext } from 'next/types';
-import { api } from '@/utils/api';
 import { Button } from '@/components/ui/button';
 import { AddPostButton } from '@/components/add-post';
 
@@ -24,8 +23,6 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 }
 
 export default function Home() {
-	const { data } = api.post.hello.useQuery({ text: 'world' });
-
 	return (
 		<div className="flex min-h-[calc(100vh-58px)] flex-col items-center justify-center">
 			<div className="flex items-center justify-center gap-2">
@@ -73,7 +70,6 @@ export default function Home() {
 					</Button>
 				</AddPostButton>
 			</div>
-			<p className="hidden">{data?.greeting}</p>
 		</div>
 	);
 }

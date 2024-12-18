@@ -79,6 +79,18 @@ export const MinimalTiptapEditor = React.forwardRef<
 		return null;
 	}
 
+	if (!props.editable) {
+		return (
+			<>
+				<EditorContent
+					editor={editor}
+					className={cn('minimal-tiptap-editor', editorContentClassName)}
+				/>
+				<LinkBubbleMenu editor={editor} />
+			</>
+		);
+	}
+
 	return (
 		<MeasuredContainer
 			as="div"
