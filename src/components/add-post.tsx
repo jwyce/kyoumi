@@ -59,6 +59,8 @@ type RouterInput = inferRouterInputs<AppRouter>;
 type PostCreateInput = RouterInput['post']['create'];
 
 export const AddPostButton = ({ children }: Props) => {
+	const [open, setOpen] = useState(false);
+
 	const [title, setTitle] = useState<string | undefined>();
 	const [topic, setTopic] = useState<PostCreateInput['topic'] | undefined>();
 	const [content, setContent] = useState<Content>(null);
@@ -72,7 +74,7 @@ export const AddPostButton = ({ children }: Props) => {
 	);
 
 	return (
-		<Dialog>
+		<Dialog open={open} onOpenChange={(v) => setOpen(v)}>
 			<DialogTrigger asChild>{children}</DialogTrigger>
 			<DialogContent>
 				<DialogHeader>
@@ -139,6 +141,11 @@ export const AddPostButton = ({ children }: Props) => {
 
 							const newPost = await post.mutateAsync({ title, topic, content });
 							if (newPost) {
+								setOpen(false);
+								setTitle(undefined);
+								setTopic(undefined);
+								setContent(null);
+								toast.success('Post created!');
 								await router.push(`/post/${newPost.slug}`);
 							}
 						}}

@@ -5,9 +5,10 @@ import { MinimalTiptapEditor } from '@/components/minimal-tiptap';
 
 export default function Post() {
 	const params = useParams();
+
 	const { data: post, isLoading } = api.post.getPost.useQuery(
-		{ slug: params.slug as string },
-		{ enabled: !!params.slug }
+		{ slug: params?.slug as string },
+		{ enabled: !!params?.slug }
 	);
 
 	if (isLoading) return <div>Loading...</div>;

@@ -1,20 +1,16 @@
 import {
-	Bookmark,
 	CheckCircle,
 	Circle,
 	Diamond,
-	Heart,
 	Plus,
-	Share2,
 	Sparkle,
 	Triangle,
 } from 'lucide-react';
 import type { AppRouter } from '@/server/api/root';
 import type { Content } from '@tiptap/react';
 import type { inferRouterOutputs } from '@trpc/server';
-import { api } from '@/utils/api';
+import { getRelativeTimeStrict } from '@/utils/relativeTime';
 import { cn } from '@/lib/utils';
-import { getRelativeTimeStrict } from '@/lib/utils/relativeTime';
 import {
 	Card,
 	CardContent,
@@ -22,12 +18,11 @@ import {
 	CardHeader,
 	CardTitle,
 } from '@/components/ui/card';
-import {
-	Tooltip,
-	TooltipContent,
-	TooltipTrigger,
-} from '@/components/ui/tooltip';
 import { MinimalTiptapEditor } from '@/components/minimal-tiptap/';
+import { BookmarkButton } from './post/bookmark-button';
+import { LikeButton } from './post/like-button';
+import { MoreActionsButton } from './post/more-actions-button';
+import { ShareButton } from './post/share-button';
 import { TopicBadge } from './topic-badge';
 
 type RouterOutput = inferRouterOutputs<AppRouter>;
@@ -98,23 +93,6 @@ export function ExploreCard({
 }: ExploreCardProps & { className?: string }) {
 	const content = post.content as Content;
 
-	const utils = api.useUtils();
-
-	async function onSettled() {
-		await utils.post.getPost.invalidate({ slug: post.slug! });
-		return await utils.post.getLatest.invalidate();
-	}
-
-	const like = api.post.like.useMutation({ onSettled });
-	const bookmark = api.post.bookmark.useMutation({ onSettled });
-
-	const likedByMe = like.isPending
-		? !post.likes.some((like) => like.authorId === me)
-		: post.likes.some((like) => like.authorId === me);
-	const bookmarkedByMe = bookmark.isPending
-		? !post.bookmarks.some((like) => like.authorId === me)
-		: post.bookmarks.some((like) => like.authorId === me);
-
 	return (
 		<Card
 			className={cn(
@@ -136,77 +114,10 @@ export function ExploreCard({
 								size={18}
 							/>
 						)}
-						<Tooltip>
-							<TooltipTrigger asChild>
-								<button
-									className={cn(
-										'group flex items-center text-sm transition-colors duration-300 hover:text-sky-500',
-										{ 'text-sky-500': bookmarkedByMe }
-									)}
-									onClick={async (e) => {
-										e.preventDefault();
-										await bookmark.mutateAsync({ id: post.id });
-									}}
-								>
-									<div className="rounded-full p-2 group-hover:bg-sky-500/10">
-										<Bookmark
-											size={18}
-											className={cn({ 'fill-sky-500': bookmarkedByMe })}
-										/>
-									</div>
-									{bookmark.isPending ? (
-										<span className="-ml-1">
-											{post.bookmarks.length + (bookmarkedByMe ? 1 : -1)}
-										</span>
-									) : (
-										<span className="-ml-1">{post.bookmarks.length}</span>
-									)}
-								</button>
-							</TooltipTrigger>
-							<TooltipContent>Bookmark</TooltipContent>
-						</Tooltip>
-						<Tooltip>
-							<TooltipTrigger asChild>
-								<button
-									className={cn(
-										'group flex items-center text-sm transition-colors duration-300 hover:text-pink-600',
-										{
-											'text-pink-600': likedByMe,
-										}
-									)}
-									onClick={async (e) => {
-										e.preventDefault();
-										await like.mutateAsync({ id: post.id });
-									}}
-								>
-									<div className="rounded-full p-2 group-hover:bg-pink-600/10">
-										<Heart
-											size={18}
-											className={cn({ 'fill-pink-600': likedByMe })}
-										/>
-									</div>
-
-									{like.isPending ? (
-										<span className="-ml-1">
-											{post.likes.length + (likedByMe ? 1 : -1)}
-										</span>
-									) : (
-										<span className="-ml-1">{post.likes.length}</span>
-									)}
-								</button>
-							</TooltipTrigger>
-							<TooltipContent>Like</TooltipContent>
-						</Tooltip>
-						<Tooltip>
-							<TooltipTrigger asChild>
-								<button className="group flex items-center text-sm transition-colors duration-300 hover:text-emerald-600">
-									<div className="rounded-full p-2 group-hover:bg-emerald-600/10">
-										<Share2 size={18} />
-									</div>
-								</button>
-							</TooltipTrigger>
-							<TooltipContent>Share</TooltipContent>
-						</Tooltip>
+						<BookmarkButton post={post} me={me} />
+						<LikeButton post={post} me={me} />
+						<ShareButton post={post} />
+						<MoreActionsButton />
 					</div>
 					<div className="whitespace-nowrap text-sm text-muted-foreground">
 						{getRelativeTimeStrict(post.createdAt)}
@@ -214,7 +125,7 @@ export function ExploreCard({
 				</div>
 			</CardHeader>
 			<CardContent className="relative flex flex-col justify-between gap-2 rounded-xl p-6 pb-0 pt-0 duration-300">
-				<CardDescription className="tiptap-readonly relative h-40 pb-4 leading-[1.425rem]">
+				<CardDescription className="tiptap-readonly relative h-44 pb-4 leading-[1.425rem]">
 					<div className="pointer-events-none absolute inset-0 z-10 h-full w-full shadow-[inset_0_-1.5rem_1rem_-0.5rem_hsl(var(--card))] duration-300 group-hover/card:shadow-[inset_0_-1.5rem_1rem_-0.5rem_hsl(var(--card-hovered))] group-focus:shadow-[inset_0_-1.5rem_1rem_-0.5rem_hsl(var(--card-hovered))]" />
 					<MinimalTiptapEditor
 						value={content}
