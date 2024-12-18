@@ -2,6 +2,10 @@ import { createTRPCRouter, protectedProcedure } from '@/server/api/trpc';
 import { bookmarks, likes, posts } from '@/server/db/schema';
 import { and, eq } from 'drizzle-orm';
 import { z } from 'zod';
+import {
+	getPaginatedHotPosts,
+	getPaginatedNewPosts,
+} from '@/utils/paginatedPosts';
 
 export const postRouter = createTRPCRouter({
 	getPost: protectedProcedure
@@ -17,17 +21,34 @@ export const postRouter = createTRPCRouter({
 
 			return post;
 		}),
-	getLatest: protectedProcedure.query(async ({ ctx }) => {
-		const latest = await ctx.db.query.posts.findMany({
-			orderBy: (posts, { desc }) => [desc(posts.createdAt)],
-			with: {
-				likes: true,
-				bookmarks: true,
-			},
-		});
+	getPosts: protectedProcedure
+		.input(
+			z.object({
+				topic: z.enum([
+					'all',
+					'pain-point',
+					'brown-bag',
+					'new-idea',
+					'improvement',
+					'fun',
+				]),
+				cursor: z.string().optional(),
+				limit: z.number().min(1).max(100).default(10),
+				sortBy: z.enum(['new', 'hot']).default('new'),
+			})
+		)
+		.query(async ({ input, ctx }) => {
+			const { db } = ctx;
+			const { cursor, limit, sortBy } = input;
 
-		return latest;
-	}),
+			if (sortBy === 'hot') {
+				console.log('HOT');
+				return await getPaginatedHotPosts({ db, cursor, limit });
+			}
+
+				console.log('NEW');
+			return await getPaginatedNewPosts({ db, cursor, limit });
+		}),
 	create: protectedProcedure
 		.input(
 			z.object({

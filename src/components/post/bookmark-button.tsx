@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/tooltip';
 
 type RouterOutput = inferRouterOutputs<AppRouter>;
-type Post = RouterOutput['post']['getLatest'][0];
+type Post = RouterOutput['post']['getPosts']['data'][0];
 
 type BookmarkButtonProps = {
 	post: Post;
@@ -22,7 +22,7 @@ export const BookmarkButton = ({ post, me }: BookmarkButtonProps) => {
 
 	async function onSettled() {
 		await utils.post.getPost.invalidate({ slug: post.slug! });
-		return await utils.post.getLatest.invalidate();
+		return await utils.post.getPosts.invalidate();
 	}
 
 	const bookmark = api.post.bookmark.useMutation({ onSettled });

@@ -26,7 +26,8 @@ import { ShareButton } from './post/share-button';
 import { TopicBadge } from './topic-badge';
 
 type RouterOutput = inferRouterOutputs<AppRouter>;
-type Post = RouterOutput['post']['getLatest'][0];
+type Post = RouterOutput['post']['getPosts']['data'][0];
+type Me = Exclude<RouterOutput['auth']['me'], undefined>;
 
 export const BORDERS_BY_TOPIC = {
 	fun: 'hover:border-topic-fun group-focus:border-topic-fun hover:shadow-fun group-focus:shadow-fun',
@@ -84,7 +85,7 @@ export function TopicIcon({ topic }: { topic: Post['topic'] }) {
 
 export interface ExploreCardProps {
 	post: Post;
-	me: string;
+	me: Me;
 }
 export function ExploreCard({
 	post,
@@ -92,6 +93,7 @@ export function ExploreCard({
 	className,
 }: ExploreCardProps & { className?: string }) {
 	const content = post.content as Content;
+	const mine = post.authorId === me.id || !!me.admin;
 
 	return (
 		<Card
@@ -114,10 +116,10 @@ export function ExploreCard({
 								size={18}
 							/>
 						)}
-						<BookmarkButton post={post} me={me} />
-						<LikeButton post={post} me={me} />
+						<BookmarkButton post={post} me={me.id} />
+						<LikeButton post={post} me={me.id} />
 						<ShareButton post={post} />
-						<MoreActionsButton />
+						{mine && <MoreActionsButton />}
 					</div>
 					<div className="whitespace-nowrap text-sm text-muted-foreground">
 						{getRelativeTimeStrict(post.createdAt)}

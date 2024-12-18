@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 
 type RouterOutput = inferRouterOutputs<AppRouter>;
-type Post = RouterOutput['post']['getLatest'][0];
+type Post = RouterOutput['post']['getPosts']['data'][0];
 
 interface TopicBadgeProps {
 	topic: Post['topic'];

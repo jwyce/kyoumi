@@ -11,6 +11,8 @@ export default function Post() {
 		{ enabled: !!params?.slug }
 	);
 
+	console.log({ post });
+
 	if (isLoading) return <div>Loading...</div>;
 
 	if (!post) return <div>No post found</div>;

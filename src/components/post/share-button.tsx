@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/tooltip';
 
 type RouterOutput = inferRouterOutputs<AppRouter>;
-type Post = RouterOutput['post']['getLatest'][0];
+type Post = RouterOutput['post']['getPosts']['data'][0];
 
 type ShareButtonProps = {
 	post: Post;

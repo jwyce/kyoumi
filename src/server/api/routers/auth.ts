@@ -3,6 +3,7 @@ import { createTRPCRouter, publicProcedure } from '@/server/api/trpc';
 import { db } from '@/server/db';
 import { users } from '@/server/db/schema';
 import { TRPCError } from '@trpc/server';
+import { eq } from 'drizzle-orm';
 import { serializeCookie } from 'oslo/cookie';
 import { z } from 'zod';
 
@@ -41,6 +42,10 @@ export const authRouter = createTRPCRouter({
 		}),
 
 	me: publicProcedure.query(async ({ ctx }) => {
-		return ctx.userId;
+		const user = await ctx.db.query.users.findFirst({
+			where: eq(users.id, ctx.userId ?? ''),
+		});
+
+		return user;
 	}),
 });
