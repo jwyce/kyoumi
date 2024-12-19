@@ -14,10 +14,9 @@ type Post = RouterOutput['post']['getPosts']['data'][0];
 
 type BookmarkButtonProps = {
 	post: Post;
-	me: string;
 };
 
-export const BookmarkButton = ({ post, me }: BookmarkButtonProps) => {
+export const BookmarkButton = ({ post }: BookmarkButtonProps) => {
 	const utils = api.useUtils();
 
 	async function onSettled() {
@@ -28,8 +27,9 @@ export const BookmarkButton = ({ post, me }: BookmarkButtonProps) => {
 	const bookmark = api.post.bookmark.useMutation({ onSettled });
 
 	const bookmarkedByMe = bookmark.isPending
-		? !post.bookmarks.some((bk) => bk.authorId === me)
-		: post.bookmarks.some((bk) => bk.authorId === me);
+		? !post.bookmarkedByMe
+		: post.bookmarkedByMe;
+
 	return (
 		<Tooltip>
 			<TooltipTrigger asChild>
@@ -54,10 +54,10 @@ export const BookmarkButton = ({ post, me }: BookmarkButtonProps) => {
 
 					{bookmark.isPending ? (
 						<span className="-ml-1">
-							{post.bookmarks.length + (bookmarkedByMe ? 1 : -1)}
+							{post.bookmarks + (bookmarkedByMe ? 1 : -1)}
 						</span>
 					) : (
-						<span className="-ml-1">{post.bookmarks.length}</span>
+						<span className="-ml-1">{post.bookmarks}</span>
 					)}
 				</button>
 			</TooltipTrigger>

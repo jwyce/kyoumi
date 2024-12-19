@@ -32,22 +32,21 @@ export const postRouter = createTRPCRouter({
 					'improvement',
 					'fun',
 				]),
+				completed: z.boolean().default(false),
+				bookmarked: z.boolean().default(false),
 				cursor: z.string().optional(),
 				limit: z.number().min(1).max(100).default(10),
 				sortBy: z.enum(['new', 'hot']).default('new'),
 			})
 		)
 		.query(async ({ input, ctx }) => {
-			const { db } = ctx;
-			const { cursor, limit, sortBy } = input;
+			const { db, userId } = ctx;
 
-			if (sortBy === 'hot') {
-				console.log('HOT');
-				return await getPaginatedHotPosts({ db, cursor, limit });
+			if (input.sortBy === 'hot') {
+				return await getPaginatedHotPosts({ db, userId, ...input });
 			}
 
-				console.log('NEW');
-			return await getPaginatedNewPosts({ db, cursor, limit });
+			return await getPaginatedNewPosts({ db, userId, ...input });
 		}),
 	create: protectedProcedure
 		.input(

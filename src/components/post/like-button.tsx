@@ -14,10 +14,9 @@ type Post = RouterOutput['post']['getPosts']['data'][0];
 
 type LikeButtonProps = {
 	post: Post;
-	me: string;
 };
 
-export const LikeButton = ({ post, me }: LikeButtonProps) => {
+export const LikeButton = ({ post }: LikeButtonProps) => {
 	const utils = api.useUtils();
 
 	async function onSettled() {
@@ -27,9 +26,7 @@ export const LikeButton = ({ post, me }: LikeButtonProps) => {
 
 	const like = api.post.like.useMutation({ onSettled });
 
-	const likedByMe = like.isPending
-		? !post.likes.some((like) => like.authorId === me)
-		: post.likes.some((like) => like.authorId === me);
+	const likedByMe = like.isPending ? !post.likedByMe : post.likedByMe;
 	return (
 		<Tooltip>
 			<TooltipTrigger asChild>
@@ -50,11 +47,9 @@ export const LikeButton = ({ post, me }: LikeButtonProps) => {
 					</div>
 
 					{like.isPending ? (
-						<span className="-ml-1">
-							{post.likes.length + (likedByMe ? 1 : -1)}
-						</span>
+						<span className="-ml-1">{post.likes + (likedByMe ? 1 : -1)}</span>
 					) : (
-						<span className="-ml-1">{post.likes.length}</span>
+						<span className="-ml-1">{post.likes}</span>
 					)}
 				</button>
 			</TooltipTrigger>

@@ -116,8 +116,8 @@ export function ExploreCard({
 								size={18}
 							/>
 						)}
-						<BookmarkButton post={post} me={me.id} />
-						<LikeButton post={post} me={me.id} />
+						<BookmarkButton post={post} />
+						<LikeButton post={post} />
 						<ShareButton post={post} />
 						{mine && <MoreActionsButton />}
 					</div>

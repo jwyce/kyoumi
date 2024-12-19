@@ -21,13 +21,14 @@ import { ExploreCard } from '@/components/explore-card';
 type RouterOutput = inferRouterOutputs<AppRouter>;
 type Post = RouterOutput['post']['getPosts']['data'][0];
 
-export default function Explore() {
-	const [sortBy, setSortBy] = useState<'hot' | 'new'>('hot');
+export default function Bookmarks() {
+	const [sortBy, setSortBy] = useState<'hot' | 'new'>('new');
 	const [topic, setTopic] = useState<Post['topic'] | 'all'>('all');
 	const { data: me, isLoading: isMeLoading } = api.auth.me.useQuery();
 	const { data: posts, isLoading } = api.post.getPosts.useQuery({
 		topic,
 		sortBy,
+		bookmarked: true,
 	});
 
 	if (isLoading || isMeLoading) return <Loading />;
