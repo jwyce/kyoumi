@@ -3,12 +3,15 @@ import type { AppType } from 'next/app';
 import { api } from '@/utils/api';
 import '@/styles/globals.css';
 import Head from 'next/head';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from '@/components/ui/sonner';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { SiteHeader } from '@/components/site-header';
 import { ThemeProvider } from '@/components/theme-provider';
 
 const MyApp: AppType = ({ Component, pageProps }) => {
+	const queryClient = new QueryClient();
+
 	return (
 		<>
 			<Head>
@@ -20,18 +23,20 @@ const MyApp: AppType = ({ Component, pageProps }) => {
 				<link rel="icon" href="/logo.svg" />
 			</Head>
 			<main className={GeistSans.className}>
-				<ThemeProvider
-					attribute="class"
-					defaultTheme="system"
-					enableSystem
-					disableTransitionOnChange
-				>
-					<TooltipProvider>
-						<SiteHeader />
-						<Component {...pageProps} />
-						<Toaster richColors />
-					</TooltipProvider>
-				</ThemeProvider>
+				<QueryClientProvider client={queryClient}>
+					<ThemeProvider
+						attribute="class"
+						defaultTheme="system"
+						enableSystem
+						disableTransitionOnChange
+					>
+						<TooltipProvider>
+							<SiteHeader />
+							<Component {...pageProps} />
+							<Toaster richColors />
+						</TooltipProvider>
+					</ThemeProvider>
+				</QueryClientProvider>
 			</main>
 		</>
 	);

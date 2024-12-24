@@ -1,12 +1,18 @@
 import { useParams } from 'next/navigation';
 import type { Content } from '@tiptap/react';
 import { api } from '@/utils/api';
+import { LinkPreview } from '@/components/link-preview';
 import { MinimalTiptapEditor } from '@/components/minimal-tiptap';
 
 export default function Post() {
 	const params = useParams();
 
 	const { data: post, isLoading } = api.post.getPost.useQuery(
+		{ slug: params?.slug as string },
+		{ enabled: !!params?.slug }
+	);
+
+	const { data: previews } = api.post.getLinkPreviews.useQuery(
 		{ slug: params?.slug as string },
 		{ enabled: !!params?.slug }
 	);
@@ -25,8 +31,15 @@ export default function Post() {
 				placeholder="What's up?"
 				autofocus={false}
 				editable={false}
+				immediatelyRender={false}
 				editorClassName="focus:outline-none"
 			/>
+
+			<div className="flex flex-col gap-4">
+				{previews?.map((preview, idx) => (
+					<LinkPreview key={idx} idx={idx} preview={preview} />
+				))}
+			</div>
 		</div>
 	);
 }

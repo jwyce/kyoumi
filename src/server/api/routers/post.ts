@@ -1,7 +1,11 @@
 import { createTRPCRouter, protectedProcedure } from '@/server/api/trpc';
 import { bookmarks, likes, posts } from '@/server/db/schema';
+import { TRPCError } from '@trpc/server';
 import { and, eq } from 'drizzle-orm';
+import { getLinkPreview } from 'link-preview-js';
 import { z } from 'zod';
+import type { Content } from '@tiptap/react';
+import { extractTiptapLinks } from '@/utils/extractTiptapLinks';
 import {
 	getPaginatedHotPosts,
 	getPaginatedNewPosts,
@@ -48,6 +52,43 @@ export const postRouter = createTRPCRouter({
 			}
 
 			return await getPaginatedNewPosts({ db, userId, ...input });
+		}),
+	getLinkPreviews: protectedProcedure
+		.input(z.object({ slug: z.string() }))
+		.query(async ({ input, ctx }) => {
+			const post = await ctx.db.query.posts.findFirst({
+				where: eq(posts.slug, input.slug),
+			});
+
+			if (!post) {
+				throw new TRPCError({ code: 'NOT_FOUND' });
+			}
+
+			const links = extractTiptapLinks(post.content as Content);
+
+			const previews = await Promise.all(
+				links.map(async (link) => await getLinkPreview(link))
+			);
+
+			return previews
+				.filter((p) => p.contentType === 'text/html')
+				.map((p) => {
+					const { title, images, favicons, ...rest } = p as unknown as {
+						url: string;
+						title: string;
+						description: string;
+						siteName: string;
+						images: string[];
+						favicons: string[];
+					};
+
+					return {
+						...rest,
+						title: title.replace(/\s[\-\/|>]+\s.*$/, '').trim(),
+						image: images.at(0),
+						favicon: favicons.at(0),
+					};
+				});
 		}),
 	create: protectedProcedure
 		.input(

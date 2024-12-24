@@ -191,3 +191,7 @@
 [data-rmiz-modal-overlay='visible'] {
 	@apply !bg-background;
 }
+
+.react-tweet-theme {
+	margin: 0 !important;
+}

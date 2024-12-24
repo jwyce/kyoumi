@@ -17,7 +17,15 @@ const config = {
 		locales: ['en'],
 		defaultLocale: 'en',
 	},
-	transpilePackages: ['geist'],
+	images: {
+		remotePatterns: [
+			{
+				protocol: 'https',
+				hostname: '**',
+			},
+		],
+	},
+	transpilePackages: ['geist', 'react-tweet', 'bsky-react-post'],
 };
 
 export default config;
