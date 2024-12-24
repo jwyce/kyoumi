@@ -7,6 +7,14 @@ import {
 	getPaginatedNewPosts,
 } from '@/utils/paginatedPosts';
 
+const topicSchema = z.enum([
+	'pain-point',
+	'brown-bag',
+	'new-idea',
+	'improvement',
+	'fun',
+]);
+
 export const postRouter = createTRPCRouter({
 	getPost: protectedProcedure
 		.input(z.object({ slug: z.string() }))
@@ -24,18 +32,11 @@ export const postRouter = createTRPCRouter({
 	getPosts: protectedProcedure
 		.input(
 			z.object({
-				topic: z.enum([
-					'all',
-					'pain-point',
-					'brown-bag',
-					'new-idea',
-					'improvement',
-					'fun',
-				]),
+				topic: topicSchema.or(z.enum(['all'])),
 				completed: z.boolean().default(false),
 				bookmarked: z.boolean().default(false),
 				cursor: z.string().optional(),
-				limit: z.number().min(1).max(100).default(10),
+				limit: z.number().min(1).max(100).default(30),
 				sortBy: z.enum(['new', 'hot']).default('new'),
 			})
 		)
@@ -52,13 +53,7 @@ export const postRouter = createTRPCRouter({
 		.input(
 			z.object({
 				title: z.string(),
-				topic: z.enum([
-					'pain-point',
-					'brown-bag',
-					'new-idea',
-					'improvement',
-					'fun',
-				]),
+				topic: topicSchema,
 				content: z.unknown(),
 			})
 		)

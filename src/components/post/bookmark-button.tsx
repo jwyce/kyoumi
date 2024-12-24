@@ -20,8 +20,7 @@ export const BookmarkButton = ({ post }: BookmarkButtonProps) => {
 	const utils = api.useUtils();
 
 	async function onSettled() {
-		await utils.post.getPost.invalidate({ slug: post.slug! });
-		return await utils.post.getPosts.invalidate();
+		return await utils.post.getPost.invalidate({ slug: post.slug! });
 	}
 
 	const bookmark = api.post.bookmark.useMutation({ onSettled });

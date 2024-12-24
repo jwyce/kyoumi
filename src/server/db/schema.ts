@@ -14,10 +14,14 @@ import { v4 } from 'uuid';
  */
 export const createTable = sqliteTableCreator((name) => `kyoumi_${name}`);
 
-export const users = createTable('users', {
-	id: text('id').primaryKey().$default(v4),
-	admin: int('admin', { mode: 'boolean' }),
-});
+export const users = createTable(
+	'users',
+	{
+		id: text('id').primaryKey().$default(v4),
+		admin: int('admin', { mode: 'boolean' }),
+	},
+	() => []
+);
 
 export const posts = createTable(
 	'posts',
@@ -41,33 +45,36 @@ export const posts = createTable(
 			() => new Date()
 		),
 	},
-	(table) => {
-		return {
-			slugIdx: index('slug_idx').on(table.slug),
-			titleIdx: index('title_idx').on(table.title),
-		};
-	}
+	(t) => [index('slug_idx').on(t.slug), index('title_idx').on(t.title)]
 );
 
-export const likes = createTable('likes', {
-	id: int('id', { mode: 'number' }).primaryKey({ autoIncrement: true }),
-	authorId: text('author_id')
-		.notNull()
-		.references(() => users.id, { onDelete: 'cascade' }),
-	postId: int('post_id')
-		.notNull()
-		.references(() => posts.id, { onDelete: 'cascade' }),
-});
+export const likes = createTable(
+	'likes',
+	{
+		id: int('id', { mode: 'number' }).primaryKey({ autoIncrement: true }),
+		authorId: text('author_id')
+			.notNull()
+			.references(() => users.id, { onDelete: 'cascade' }),
+		postId: int('post_id')
+			.notNull()
+			.references(() => posts.id, { onDelete: 'cascade' }),
+	},
+	() => []
+);
 
-export const bookmarks = createTable('bookmarks', {
-	id: int('id', { mode: 'number' }).primaryKey({ autoIncrement: true }),
-	authorId: text('author_id')
-		.notNull()
-		.references(() => users.id, { onDelete: 'cascade' }),
-	postId: int('post_id')
-		.notNull()
-		.references(() => posts.id, { onDelete: 'cascade' }),
-});
+export const bookmarks = createTable(
+	'bookmarks',
+	{
+		id: int('id', { mode: 'number' }).primaryKey({ autoIncrement: true }),
+		authorId: text('author_id')
+			.notNull()
+			.references(() => users.id, { onDelete: 'cascade' }),
+		postId: int('post_id')
+			.notNull()
+			.references(() => posts.id, { onDelete: 'cascade' }),
+	},
+	() => []
+);
 
 export const usersRelations = relations(users, ({ many }) => ({
 	posts: many(posts),

@@ -18,6 +18,11 @@ import {
 	CardHeader,
 	CardTitle,
 } from '@/components/ui/card';
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipTrigger,
+} from '@/components/ui/tooltip';
 import { MinimalTiptapEditor } from '@/components/minimal-tiptap/';
 import { BookmarkButton } from './post/bookmark-button';
 import { LikeButton } from './post/like-button';
@@ -111,10 +116,15 @@ export function ExploreCard({
 					<div className="flex items-center gap-5 text-center duration-300">
 						<TopicBadge topic={post.topic} />
 						{post.complete && (
-							<CheckCircle
-								className="stroke-green-600 dark:stroke-green-300"
-								size={18}
-							/>
+							<Tooltip>
+								<TooltipTrigger asChild>
+									<CheckCircle
+										className="stroke-green-600 dark:stroke-green-300"
+										size={18}
+									/>
+								</TooltipTrigger>
+								<TooltipContent>Complete</TooltipContent>
+							</Tooltip>
 						)}
 						<BookmarkButton post={post} />
 						<LikeButton post={post} />

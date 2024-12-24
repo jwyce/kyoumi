@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { uploadFiles } from '@/server/uploadthing';
 import { Placeholder } from '@tiptap/extension-placeholder';
 import { TextStyle } from '@tiptap/extension-text-style';
 import { Typography } from '@tiptap/extension-typography';
@@ -48,19 +49,16 @@ const createExtensions = (placeholder: string) => [
 	Underline,
 	Image.configure({
 		allowedMimeTypes: ['image/*'],
-		maxFileSize: 5 * 1024 * 1024,
+		maxFileSize: 4 * 1024 * 1024,
 		allowBase64: true,
 		uploadFn: async (file) => {
-			// NOTE: This is a fake upload function. Replace this with your own upload logic.
-			// This function should return the uploaded image URL.
-
-			// wait 3s to simulate upload
-			await new Promise((resolve) => setTimeout(resolve, 3000));
+			const res = await uploadFiles('imageUploader', { files: [file] });
+			const uploadfile = res[0];
+			if (uploadfile) {
+				return { id: uploadfile.key, src: uploadfile.url };
+			}
 
 			const src = await fileToBase64(file);
-
-			// either return { id: string | number, src: string } or just src
-			// return src;
 			return { id: randomId(), src };
 		},
 		onToggle(editor, files, pos) {
@@ -120,22 +118,42 @@ const createExtensions = (placeholder: string) => [
 	FileHandler.configure({
 		allowBase64: true,
 		allowedMimeTypes: ['image/*'],
-		maxFileSize: 5 * 1024 * 1024,
+		maxFileSize: 4 * 1024 * 1024,
 		onDrop: (editor, files, pos) => {
+			// eslint-disable-next-line @typescript-eslint/no-misused-promises
 			files.forEach(async (file) => {
-				const src = await fileToBase64(file);
+				const res = await uploadFiles('imageUploader', { files: [file] });
+				const uploadfile = res[0];
+				let attrs: Record<string, string>;
+				if (uploadfile) {
+					attrs = { id: uploadfile.key, src: uploadfile.url };
+				} else {
+					const src = await fileToBase64(file);
+					attrs = { id: randomId(), src };
+				}
+
 				editor.commands.insertContentAt(pos, {
 					type: 'image',
-					attrs: { src },
+					attrs,
 				});
 			});
 		},
 		onPaste: (editor, files) => {
+			// eslint-disable-next-line @typescript-eslint/no-misused-promises
 			files.forEach(async (file) => {
-				const src = await fileToBase64(file);
+				const res = await uploadFiles('imageUploader', { files: [file] });
+				const uploadfile = res[0];
+				let attrs: Record<string, string>;
+				if (uploadfile) {
+					attrs = { id: uploadfile.key, src: uploadfile.url };
+				} else {
+					const src = await fileToBase64(file);
+					attrs = { id: randomId(), src };
+				}
+
 				editor.commands.insertContent({
 					type: 'image',
-					attrs: { src },
+					attrs,
 				});
 			});
 		},

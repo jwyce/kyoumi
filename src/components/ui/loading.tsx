@@ -8,7 +8,7 @@ export const Loading = () => {
 	);
 };
 
-const Spinner = (props: SVGProps<SVGSVGElement>) => (
+export const Spinner = (props: SVGProps<SVGSVGElement>) => (
 	<svg xmlns="http://www.w3.org/2000/svg" width={24} height={24} {...props}>
 		<style>
 			{

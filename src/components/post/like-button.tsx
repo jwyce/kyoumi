@@ -20,8 +20,7 @@ export const LikeButton = ({ post }: LikeButtonProps) => {
 	const utils = api.useUtils();
 
 	async function onSettled() {
-		await utils.post.getPost.invalidate({ slug: post.slug! });
-		return await utils.post.getPosts.invalidate();
+		return await utils.post.getPost.invalidate({ slug: post.slug! });
 	}
 
 	const like = api.post.like.useMutation({ onSettled });
