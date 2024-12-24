@@ -97,7 +97,7 @@ function Extras({ preview }: { preview: Preview }) {
 
 	if (preview.url.includes('spotify')) {
 		return <Spotify wide link={preview.url} className="!rounded-2xl" />;
-	} else if (preview.url.includes('youtube')) {
+	} else if (preview.url.includes('youtube') && preview.url.includes('watch')) {
 		return (
 			<YouTube
 				videoId={RegExp(/[?&]v=([a-zA-Z0-9_-]+)/).exec(preview.url)![1]}
@@ -105,10 +105,14 @@ function Extras({ preview }: { preview: Preview }) {
 				onReady={onPlayerReady}
 			/>
 		);
-	} else if (preview.url.includes('x.com')) {
+	} else if (preview.url.includes('x.com') && preview.url.includes('status')) {
 		const id = RegExp(/status\/([0-9]+)/).exec(preview.url)![1] ?? '';
 		return <Tweet id={id} />;
-	} else if (preview.url.includes('bsky')) {
+	} else if (
+		preview.url.includes('bsky') &&
+		preview.url.includes('profile') &&
+		preview.url.includes('post')
+	) {
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		const [_, handle, id] = RegExp(/\/profile\/([^/]+)\/post\/([^/]+)/).exec(
 			preview.url
@@ -118,13 +122,15 @@ function Extras({ preview }: { preview: Preview }) {
 
 	return (
 		<>
-			<div className="text-muted-foreground">{preview.description}</div>
+			<div className="line-clamp-2 text-muted-foreground">
+				{preview.description}
+			</div>
 			{preview.image && (
 				<NextImage
 					src={preview.image}
 					alt={preview.title}
-					width={300}
-					height={300}
+					width={340}
+					height={340}
 					className="rounded-md"
 				/>
 			)}

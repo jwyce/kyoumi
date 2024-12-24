@@ -112,7 +112,12 @@ export const Posts = ({ type }: PostsProps) => {
 				<div className="grid gap-8 xl:grid-cols-2 2xl:grid-cols-3">
 					{posts?.pages.flatMap((page) =>
 						page.data.map((post) => (
-							<Link key={post.slug} href={`/post/${post.slug}`} passHref>
+							<Link
+								key={post.slug}
+								href={`/post/${post.slug}`}
+								passHref
+								className="motion-preset-fade motion-preset-slide-up"
+							>
 								<ExploreCard post={post} me={me} />
 							</Link>
 						))

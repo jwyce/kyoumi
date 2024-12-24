@@ -147,6 +147,7 @@ export function ExploreCard({
 						placeholder="What's up?"
 						autofocus={false}
 						editable={false}
+						immediatelyRender={false}
 						editorClassName="focus:outline-none"
 					/>
 				</CardDescription>

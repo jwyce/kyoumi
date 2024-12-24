@@ -25,7 +25,7 @@ const config = {
 			},
 		],
 	},
-	transpilePackages: ['geist', 'react-tweet', 'bsky-react-post'],
+	transpilePackages: ['geist', 'react-tweet', 'bsky-react-post', 'react-plock'],
 };
 
 export default config;

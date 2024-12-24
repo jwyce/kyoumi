@@ -24,14 +24,26 @@ export const postRouter = createTRPCRouter({
 		.input(z.object({ slug: z.string() }))
 		.query(async ({ input, ctx }) => {
 			const post = await ctx.db.query.posts.findFirst({
-				where: eq(posts.slug, input.slug),
+				where: and(eq(posts.slug, input.slug), eq(posts.cloak, false)),
 				with: {
 					likes: true,
 					bookmarks: true,
 				},
 			});
 
-			return post;
+			if (!post) {
+				throw new TRPCError({ code: 'NOT_FOUND', message: 'Post not found' });
+			}
+
+			const { likes, bookmarks, ...rest } = post;
+
+			return {
+				...rest,
+				likes: likes.length,
+				bookmarks: bookmarks.length,
+				likedByMe: !!likes.find((l) => l.authorId === ctx.userId),
+				bookmarkedByMe: !!bookmarks.find((l) => l.authorId === ctx.userId),
+			};
 		}),
 	getPosts: protectedProcedure
 		.input(
@@ -73,18 +85,22 @@ export const postRouter = createTRPCRouter({
 			return previews
 				.filter((p) => p.contentType === 'text/html')
 				.map((p) => {
-					const { title, images, favicons, ...rest } = p as unknown as {
-						url: string;
-						title: string;
-						description: string;
-						siteName: string;
-						images: string[];
-						favicons: string[];
-					};
+					const { title, images, favicons, siteName, ...rest } =
+						p as unknown as {
+							url: string;
+							title: string;
+							description: string;
+							siteName: string;
+							images: string[];
+							favicons: string[];
+						};
+
+					const newTitle = title.replace(/\s[\-\/|>]+\s.*$/, '').trim();
 
 					return {
 						...rest,
-						title: title.replace(/\s[\-\/|>]+\s.*$/, '').trim(),
+						siteName: siteName ?? newTitle,
+						title: newTitle,
 						image: images.at(0),
 						favicon: favicons.at(0),
 					};

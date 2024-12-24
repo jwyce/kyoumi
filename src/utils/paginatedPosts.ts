@@ -51,7 +51,8 @@ const getPosts = async (
 			whereClause,
 			topic !== 'all' ? eq(posts.topic, topic) : undefined,
 			completed !== undefined ? eq(posts.complete, completed) : undefined,
-			bookmarked ? sql`bookmarked_by_me = 1` : undefined
+			bookmarked ? sql`bookmarked_by_me = 1` : undefined,
+			eq(posts.cloak, false)
 		)
 	);
 

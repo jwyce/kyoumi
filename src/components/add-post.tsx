@@ -99,6 +99,7 @@ export const AddPostButton = ({ children }: Props) => {
 						placeholder="What's up?"
 						autofocus={true}
 						editable={true}
+						immediatelyRender={false}
 						editorClassName="focus:outline-none overflow-y-auto max-h-[300px]"
 					/>
 				</div>
