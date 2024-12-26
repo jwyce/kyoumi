@@ -52,25 +52,25 @@ export default function Login() {
 			<p className="font-semibold text-muted-foreground">
 				explore your curiosity, share interests, discuss topics anonymously
 			</p>
-			<div className="flex items-center gap-2">
-				<Input
-					type="password"
-					placeholder="Password"
-					value={password}
-					onChange={(e) => setPassword(e.target.value)}
-				/>
-				<Button
-					variant="secondary"
-					onClick={async () => {
-						const user = await login.mutateAsync({ password });
-						if (user) {
-							await router.push('/');
-						}
-					}}
-				>
-					Login
-				</Button>
-			</div>
+			<form
+				onSubmit={async (e) => {
+					e.preventDefault();
+					const user = await login.mutateAsync({ password });
+					if (user) {
+						await router.push('/');
+					}
+				}}
+			>
+				<div className="flex items-center gap-2">
+					<Input
+						type="password"
+						placeholder="Password"
+						value={password}
+						onChange={(e) => setPassword(e.target.value)}
+					/>
+					<Button type="submit">Login</Button>
+				</div>
+			</form>
 		</div>
 	);
 }

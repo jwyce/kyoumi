@@ -146,7 +146,9 @@ export const MoreActionsButton = ({ post, input }: MoreActionsProps) => {
 				</DropdownMenuTrigger>
 				<DropdownMenuContent className="w-56">
 					<DropdownMenuGroup>
-						<DropdownMenuItem>
+						<DropdownMenuItem
+							onClick={() => router.push(`/post/${post.slug}/edit`)}
+						>
 							<Pencil className="mr-2 h-4 w-4" /> Edit
 						</DropdownMenuItem>
 						{!post.complete && (

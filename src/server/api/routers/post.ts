@@ -129,6 +129,37 @@ export const postRouter = createTRPCRouter({
 
 			return post;
 		}),
+	edit: protectedProcedure
+		.input(
+			z.object({
+				id: z.number(),
+				title: z.string(),
+				topic: topicSchema,
+				content: z.unknown(),
+			})
+		)
+		.mutation(async ({ input, ctx }) => {
+			const { id, ...rest } = input;
+
+			const post = await ctx.db.query.posts.findFirst({
+				where: eq(posts.id, input.id),
+			});
+			const user = await ctx.db.query.users.findFirst({
+				where: eq(users.id, ctx.userId),
+			});
+
+			if (!post) {
+				throw new TRPCError({ code: 'NOT_FOUND' });
+			}
+			if (!user?.admin && post.authorId !== ctx.userId) {
+				throw new TRPCError({ code: 'UNAUTHORIZED' });
+			}
+
+			await ctx.db
+				.update(posts)
+				.set({ ...rest })
+				.where(eq(posts.id, id));
+		}),
 	like: protectedProcedure
 		.input(z.object({ id: z.number() }))
 		.mutation(async ({ input, ctx }) => {

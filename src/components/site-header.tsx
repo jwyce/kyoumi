@@ -1,6 +1,6 @@
 import { useRef } from 'react';
 import { usePathname } from 'next/navigation';
-import { PlusCircle } from 'lucide-react';
+import { SquarePen } from 'lucide-react';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { Button } from '@/components/ui/button';
 import {
@@ -35,7 +35,7 @@ export function SiteHeader() {
 							<AddPostButton>
 								<TooltipTrigger asChild>
 									<Button variant="outline" size="icon" ref={ref}>
-										<PlusCircle className="h-4 w-4" />
+										<SquarePen className="h-4 w-4" />
 									</Button>
 								</TooltipTrigger>
 							</AddPostButton>

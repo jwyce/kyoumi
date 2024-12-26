@@ -16,9 +16,20 @@ const MyApp: AppType = ({ Component, pageProps }) => {
 		<>
 			<Head>
 				<title>kyoumi</title>
+				<meta property="og:title" content="kyoumi 興味" />
+				<meta property="og:site_name" content="kyoumi 興味" />
 				<meta
-					name="description"
-					content="🐙 興味 - explore your curiosity, share interests, discuss topics anonymously"
+					property="description"
+					content="🐙 explore your curiosity, share interests, discuss topics anonymously"
+				/>
+				<meta
+					property="og:description"
+					content="🐙 explore your curiosity, share interests, discuss topics anonymously"
+				/>
+				<meta property="og:type" content="website" />
+				<meta
+					property="og:image"
+					content="https://kyoumi.vercel.app/kyoumi.png"
 				/>
 				<link rel="icon" href="/logo.svg" />
 			</Head>

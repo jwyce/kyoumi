@@ -71,7 +71,7 @@ export const LinkPreview = ({ preview, idx }: Props) => {
 				<a
 					href={preview.url}
 					target="_blank"
-					className="text-primary hover:underline"
+					className="text-link transition-colors duration-300 hover:text-link/80"
 				>
 					{preview.title}
 				</a>

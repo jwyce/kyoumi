@@ -1,9 +1,8 @@
 import Image from 'next/image';
-import Link from 'next/link';
-import { Compass, PlusCircle } from 'lucide-react';
 import { parseCookies } from 'oslo/cookie';
 import type { GetServerSidePropsContext } from 'next/types';
-import { Button } from '@/components/ui/button';
+import { CreatePostButton } from '@/components/ui/create-post-button';
+import { ExploreButton } from '@/components/ui/explore-button';
 import { AddPostButton } from '@/components/add-post';
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
@@ -42,26 +41,9 @@ export default function Home() {
 				explore your curiosity, share interests, discuss topics anonymously
 			</p>
 			<div className="mt-4 flex flex-col-reverse gap-3 md:flex-row">
-				<Button
-					asChild
-					className="hero-join-button-dark group relative mx-auto hidden w-fit overflow-hidden rounded-xl p-[1px] font-bold transition-all duration-300 dark:block dark:hover:shadow-[0_0_2rem_-0.5rem_#fff8] md:mr-0 lg:mr-auto"
-					variant="outline"
-				>
-					<Link href="/explore">
-						<span className="inline-flex h-full w-fit items-center gap-2 rounded-xl px-4 py-2 transition-all duration-300 dark:bg-neutral-900 dark:text-white group-hover:dark:bg-black">
-							<Compass className="h-4 w-4" />
-							Explore
-						</span>
-					</Link>
-				</Button>
+				<ExploreButton />
 				<AddPostButton>
-					<Button
-						className="flex items-center gap-2 rounded-xl border-2 px-4 py-2 dark:text-white"
-						variant="outline"
-					>
-						<PlusCircle className="h-4 w-4" />
-						Add new
-					</Button>
+					<CreatePostButton />
 				</AddPostButton>
 			</div>
 		</div>
