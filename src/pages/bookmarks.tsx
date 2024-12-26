@@ -7,7 +7,7 @@ export default function Bookmarks() {
 			<Head>
 				<title>bookmarks | kyoumi</title>
 			</Head>
-			<Posts type="bookmarks" />
+			<Posts type="bookmarks" emptyMessage="Nothing bookmarked yet" />
 		</>
 	);
 }

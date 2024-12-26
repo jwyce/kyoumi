@@ -24,12 +24,14 @@ type Post = RouterOutput['post']['getPosts']['data'][0];
 
 type PostsProps = {
 	type: 'explore' | 'bookmarks' | 'completed';
+	emptyMessage?: string;
 };
 
-export const Posts = ({ type }: PostsProps) => {
+export const Posts = ({ type, emptyMessage }: PostsProps) => {
 	const [sortBy, setSortBy] = useState<'hot' | 'new'>('hot');
 	const [topic, setTopic] = useState<Post['topic'] | 'all'>('all');
 	const { data: me, isLoading: isMeLoading } = api.auth.me.useQuery();
+
 	const {
 		data: posts,
 		isLoading,
@@ -45,13 +47,20 @@ export const Posts = ({ type }: PostsProps) => {
 		{ getNextPageParam: (last) => last.nextCursor }
 	);
 
+	const postsCount =
+		posts?.pages.reduce((acc, p) => acc + p.data.length, 0) ?? 0;
+
 	if (isLoading || isMeLoading) return <Loading />;
 
-	if (!me || !posts || posts.pages.length === 0)
-		return <div>No posts found</div>;
+	if (!me || !posts || postsCount === 0)
+		return (
+			<div className="flex h-[90vh] w-full items-center justify-center text-sm text-muted-foreground">
+				{emptyMessage ?? 'No posts found'}
+			</div>
+		);
 
 	return (
-		<div className="mt-4 px-16 pb-8">
+		<div className="mt-4 min-h-[90vh] px-16 pb-8">
 			<div className="flex items-center justify-end gap-2 pb-4">
 				<Combobox
 					fieldValue={topic}
@@ -85,9 +94,9 @@ export const Posts = ({ type }: PostsProps) => {
 			</div>
 
 			<InfiniteScroll
-				dataLength={posts.pages.reduce((acc, p) => acc + p.data.length, 0)}
+				dataLength={postsCount}
 				next={fetchNextPage}
-				hasMore={hasNextPage}
+				hasMore={hasNextPage && postsCount >= 30}
 				loader={
 					<div className="mt-4 flex w-full items-center justify-center">
 						<Spinner className="fill-rose-400" />
@@ -98,19 +107,9 @@ export const Posts = ({ type }: PostsProps) => {
 						<b>Yay! You have seen it all 🎉</b>
 					</p>
 				}
-				// eslint-disable-next-line @typescript-eslint/no-empty-function
-				refreshFunction={() => {}}
-				pullDownToRefresh
-				pullDownToRefreshThreshold={50}
-				pullDownToRefreshContent={
-					<h3 style={{ textAlign: 'center' }}>&#8595; Pull down to refresh</h3>
-				}
-				releaseToRefreshContent={
-					<h3 style={{ textAlign: 'center' }}>&#8593; Release to refresh</h3>
-				}
 			>
 				<div className="grid gap-8 xl:grid-cols-2 2xl:grid-cols-3">
-					{posts?.pages.flatMap((page) =>
+					{posts?.pages.flatMap((page, idx) =>
 						page.data.map((post) => (
 							<Link
 								key={post.slug}
@@ -118,7 +117,20 @@ export const Posts = ({ type }: PostsProps) => {
 								passHref
 								className="motion-preset-fade motion-preset-slide-up"
 							>
-								<ExploreCard post={post} me={me} />
+								<ExploreCard
+									post={post}
+									me={me}
+									input={{
+										cursor:
+											idx < 1
+												? undefined
+												: (posts.pages.at(idx - 1)?.nextCursor ?? undefined),
+										topic,
+										sortBy,
+										bookmarked: type === 'bookmarks',
+										completed: type === 'completed',
+									}}
+								/>
 							</Link>
 						))
 					)}

@@ -7,6 +7,7 @@ import {
 	Triangle,
 } from 'lucide-react';
 import type { AppRouter } from '@/server/api/root';
+import type { RouterInputs } from '@/utils/api';
 import type { Content } from '@tiptap/react';
 import type { inferRouterOutputs } from '@trpc/server';
 import { getRelativeTimeStrict } from '@/utils/relativeTime';
@@ -32,6 +33,7 @@ import { TopicBadge } from './topic-badge';
 
 type RouterOutput = inferRouterOutputs<AppRouter>;
 type Post = RouterOutput['post']['getPosts']['data'][0];
+type PostInput = RouterInputs['post']['getPosts'];
 type Me = Exclude<RouterOutput['auth']['me'], undefined>;
 
 export const BORDERS_BY_TOPIC = {
@@ -91,10 +93,12 @@ export function TopicIcon({ topic }: { topic: Post['topic'] }) {
 export interface ExploreCardProps {
 	post: Post;
 	me: Me;
+	input?: PostInput;
 }
 export function ExploreCard({
 	post,
 	me,
+	input,
 	className,
 }: ExploreCardProps & { className?: string }) {
 	const content = post.content as Content;
@@ -126,10 +130,10 @@ export function ExploreCard({
 								<TooltipContent>Complete</TooltipContent>
 							</Tooltip>
 						)}
-						<BookmarkButton post={post} />
 						<LikeButton post={post} />
+						<BookmarkButton post={post} />
 						<ShareButton post={post} />
-						{mine && <MoreActionsButton />}
+						{mine && <MoreActionsButton post={post} input={input} />}
 					</div>
 					<div className="whitespace-nowrap text-sm text-muted-foreground">
 						{getRelativeTimeStrict(post.createdAt)}

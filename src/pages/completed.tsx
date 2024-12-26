@@ -7,7 +7,7 @@ export default function Completed() {
 			<Head>
 				<title>completed | kyoumi</title>
 			</Head>
-			<Posts type="completed" />
+			<Posts type="completed" emptyMessage="Nothing completed yet" />
 		</>
 	);
 }

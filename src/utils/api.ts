@@ -28,7 +28,11 @@ export const api = createTRPCNext<AppRouter>({
 						retry(failureCount, err) {
 							if (err instanceof TRPCClientError) {
 								const error = err as TRPCClientError<AppRouter>;
-								if (error.data?.code === 'UNAUTHORIZED') {
+								if (
+									error.data?.code === 'UNAUTHORIZED' ||
+									(error.data?.code === 'NOT_FOUND' &&
+										error.data.path === 'post.getPost')
+								) {
 									return false;
 								}
 							}

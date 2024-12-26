@@ -1,5 +1,5 @@
 import { createTRPCRouter, protectedProcedure } from '@/server/api/trpc';
-import { bookmarks, likes, posts } from '@/server/db/schema';
+import { bookmarks, likes, posts, users } from '@/server/db/schema';
 import { TRPCError } from '@trpc/server';
 import { and, eq } from 'drizzle-orm';
 import { getLinkPreview } from 'link-preview-js';
@@ -174,5 +174,51 @@ export const postRouter = createTRPCRouter({
 					authorId: ctx.userId,
 				});
 			}
+		}),
+	complete: protectedProcedure
+		.input(z.object({ id: z.number() }))
+		.mutation(async ({ input, ctx }) => {
+			const user = await ctx.db.query.users.findFirst({
+				where: eq(users.id, ctx.userId),
+			});
+			const post = await ctx.db.query.posts.findFirst({
+				where: eq(posts.id, input.id),
+			});
+
+			if (!post) {
+				throw new TRPCError({ code: 'NOT_FOUND' });
+			}
+
+			if (!user?.admin && post.authorId !== ctx.userId) {
+				throw new TRPCError({ code: 'UNAUTHORIZED' });
+			}
+
+			await ctx.db
+				.update(posts)
+				.set({ complete: true })
+				.where(eq(posts.id, input.id));
+		}),
+	delete: protectedProcedure
+		.input(z.object({ id: z.number() }))
+		.mutation(async ({ input, ctx }) => {
+			const user = await ctx.db.query.users.findFirst({
+				where: eq(users.id, ctx.userId),
+			});
+			const post = await ctx.db.query.posts.findFirst({
+				where: eq(posts.id, input.id),
+			});
+
+			if (!post) {
+				throw new TRPCError({ code: 'NOT_FOUND' });
+			}
+
+			if (!user?.admin && post.authorId !== ctx.userId) {
+				throw new TRPCError({ code: 'UNAUTHORIZED' });
+			}
+
+			await ctx.db
+				.update(posts)
+				.set({ cloak: true })
+				.where(eq(posts.id, input.id));
 		}),
 });

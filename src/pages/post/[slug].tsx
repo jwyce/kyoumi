@@ -36,7 +36,12 @@ export default function Post() {
 
 	if (isLoading || isMeLoading || !me) return <Loading />;
 
-	if (!post) return <div>No post found</div>;
+	if (!post)
+		return (
+			<div className="flex h-[90vh] w-full items-center justify-center text-sm font-semibold text-muted-foreground">
+				No post found
+			</div>
+		);
 
 	const mine = post.authorId === me.id || !!me.admin;
 
@@ -62,10 +67,10 @@ export default function Post() {
 									<TooltipContent>Complete</TooltipContent>
 								</Tooltip>
 							)}
-							<BookmarkButton post={post} />
 							<LikeButton post={post} />
+							<BookmarkButton post={post} />
 							<ShareButton post={post} />
-							{mine && <MoreActionsButton />}
+							{mine && <MoreActionsButton post={post} />}
 						</div>
 						<div className="whitespace-nowrap text-sm text-muted-foreground">
 							{getRelativeTimeStrict(post.createdAt)}
