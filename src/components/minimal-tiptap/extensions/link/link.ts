@@ -45,7 +45,7 @@ export const Link = TiptapLink.extend({
 		const { editor } = this;
 
 		return [
-			...(this.parent?.() || []),
+			...(this.parent?.() ?? []),
 			new Plugin({
 				props: {
 					handleKeyDown: (_: EditorView, event: KeyboardEvent) => {
@@ -67,7 +67,7 @@ export const Link = TiptapLink.extend({
 						 */
 
 						const { schema, doc, tr } = view.state;
-						const range = getMarkRange(doc.resolve(pos), schema.marks.link);
+						const range = getMarkRange(doc.resolve(pos), schema.marks.link!);
 
 						if (!range) {
 							return;

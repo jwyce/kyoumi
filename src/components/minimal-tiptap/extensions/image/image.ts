@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
 import { Image as TiptapImage } from '@tiptap/extension-image';
 import { ReplaceStep } from '@tiptap/pm/transform';
 import { ReactNodeViewRenderer } from '@tiptap/react';
@@ -83,9 +86,9 @@ const handleError = (
 
 const handleDataUrl = (src: string): { blob: Blob; extension: string } => {
 	const [header, base64Data] = src.split(',');
-	const mimeType = header.split(':')[1].split(';')[0];
-	const extension = mimeType.split('/')[1];
-	const byteCharacters = atob(base64Data);
+	const mimeType = ((header ?? '').split(':')[1] ?? '').split(';')[0];
+	const extension = (mimeType ?? '').split('/')[1]!;
+	const byteCharacters = atob(base64Data ?? '');
 	const byteArray = new Uint8Array(byteCharacters.length);
 	for (let i = 0; i < byteCharacters.length; i++) {
 		byteArray[i] = byteCharacters.charCodeAt(i);
@@ -100,7 +103,7 @@ const handleImageUrl = async (
 	const response = await fetch(src);
 	if (!response.ok) throw new Error('Failed to fetch image');
 	const blob = await response.blob();
-	const extension = blob.type.split(/\/|\+/)[1];
+	const extension = blob.type.split(/\/|\+/)[1]!;
 	return { blob, extension };
 };
 
@@ -130,7 +133,7 @@ const downloadImage = async (
 	options: CustomImageOptions
 ): Promise<void> => {
 	const { src, alt } = props;
-	const potentialName = alt || 'image';
+	const potentialName = alt ?? 'image';
 
 	try {
 		const { blob, extension } = await fetchImageBlob(src);
@@ -267,19 +270,19 @@ export const Image = TiptapImage.extend<CustomImageOptions>({
 				},
 
 			downloadImage: (attrs) => () => {
-				const downloadFunc = this.options.downloadImage || downloadImage;
+				const downloadFunc = this.options.downloadImage ?? downloadImage;
 				void downloadFunc({ ...attrs, action: 'download' }, this.options);
 				return true;
 			},
 
 			copyImage: (attrs) => () => {
-				const copyImageFunc = this.options.copyImage || copyImage;
+				const copyImageFunc = this.options.copyImage ?? copyImage;
 				void copyImageFunc({ ...attrs, action: 'copyImage' }, this.options);
 				return true;
 			},
 
 			copyLink: (attrs) => () => {
-				const copyLinkFunc = this.options.copyLink || copyLink;
+				const copyLinkFunc = this.options.copyLink ?? copyLink;
 				void copyLinkFunc({ ...attrs, action: 'copyLink' }, this.options);
 				return true;
 			},

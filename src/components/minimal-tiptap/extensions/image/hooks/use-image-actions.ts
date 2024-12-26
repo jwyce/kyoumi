@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import * as React from 'react';
 import type { Node } from '@tiptap/pm/model';
 import type { Editor } from '@tiptap/react';

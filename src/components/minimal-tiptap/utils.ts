@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/prefer-regexp-exec */
 import type { Editor } from '@tiptap/react';
 import type { MinimalTiptapProps } from './minimal-tiptap';
 
@@ -35,7 +36,7 @@ const shortcutKeyMap: Record<string, ShortcutKeyResult> = {
 };
 
 export const getShortcutKey = (key: string): ShortcutKeyResult =>
-	shortcutKeyMap[key.toLowerCase()] || { symbol: key, readable: key };
+	shortcutKeyMap[key.toLowerCase()] ?? { symbol: key, readable: key };
 
 export const getShortcutKeys = (keys: string[]): ShortcutKeyResult[] =>
 	keys.map(getShortcutKey);
@@ -164,7 +165,7 @@ const checkTypeAndSize = (
 ): { isValidType: boolean; isValidSize: boolean } => {
 	const mimeType = input instanceof File ? input.type : base64MimeType(input);
 	const size =
-		input instanceof File ? input.size : atob(input.split(',')[1]).length;
+		input instanceof File ? input.size : atob(input.split(',')[1] ?? '').length;
 
 	const isValidType =
 		allowedMimeTypes.length === 0 ||
@@ -178,13 +179,13 @@ const checkTypeAndSize = (
 
 const base64MimeType = (encoded: string): string => {
 	const result = encoded.match(/data:([a-zA-Z0-9]+\/[a-zA-Z0-9-.+]+).*,.*/);
-	return result && result.length > 1 ? result[1] : 'unknown';
+	return result && result.length > 1 ? result[1]! : 'unknown';
 };
 
 const isBase64 = (str: string): boolean => {
 	if (str.startsWith('data:')) {
 		const matches = str.match(/^data:[^;]+;base64,(.+)$/);
-		if (matches && matches[1]) {
+		if (matches?.[1]) {
 			str = matches[1];
 		} else {
 			return false;

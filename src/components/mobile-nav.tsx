@@ -76,6 +76,7 @@ function MobileLink({
 		<Link
 			href={href}
 			onClick={() => {
+				// eslint-disable-next-line @typescript-eslint/no-base-to-string
 				router.push(href.toString());
 				onOpenChange?.(false);
 			}}

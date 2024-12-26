@@ -21,7 +21,7 @@ export const MeasuredContainer = React.forwardRef(
 		const innerRef = React.useRef<HTMLElement>(null);
 		const rect = useContainerSize(innerRef.current);
 
-		React.useImperativeHandle(ref, () => innerRef.current as HTMLElement);
+		React.useImperativeHandle(ref, () => innerRef.current!);
 
 		const customStyle = {
 			[`--${name}-width`]: `${rect.width}px`,
@@ -29,6 +29,7 @@ export const MeasuredContainer = React.forwardRef(
 		};
 
 		return (
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 			<Component {...props} ref={innerRef} style={{ ...customStyle, ...style }}>
 				{children}
 			</Component>

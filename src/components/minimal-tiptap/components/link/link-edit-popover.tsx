@@ -29,7 +29,7 @@ const LinkEditPopover = ({ editor, size, variant }: LinkEditPopoverProps) => {
 				.extendMarkRange('link')
 				.insertContent({
 					type: 'text',
-					text: text || url,
+					text: text ?? url,
 					marks: [
 						{
 							type: 'link',

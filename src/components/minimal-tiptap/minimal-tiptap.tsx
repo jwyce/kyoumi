@@ -1,5 +1,4 @@
 import * as React from 'react';
-import './styles/index.css';
 import { EditorContent } from '@tiptap/react';
 import type { Content, Editor } from '@tiptap/react';
 import type { UseMinimalTiptapEditorProps } from './hooks/use-minimal-tiptap';

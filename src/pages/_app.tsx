@@ -2,6 +2,7 @@ import { GeistSans } from 'geist/font/sans';
 import type { AppType } from 'next/app';
 import { api } from '@/utils/api';
 import '@/styles/globals.css';
+import '@/components/minimal-tiptap/styles/index.css';
 import Head from 'next/head';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from '@/components/ui/sonner';

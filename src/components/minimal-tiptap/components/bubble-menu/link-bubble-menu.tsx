@@ -27,7 +27,7 @@ export const LinkBubbleMenu: React.FC<LinkBubbleMenuProps> = ({ editor }) => {
 		const { href, target } = editor.getAttributes('link');
 		const text = editor.state.doc.textBetween(from, to, ' ');
 
-		setLinkAttrs({ href, target });
+		setLinkAttrs({ href: href as string, target: target as string });
 		setSelectedText(text);
 	}, [editor]);
 
@@ -59,7 +59,7 @@ export const LinkBubbleMenu: React.FC<LinkBubbleMenuProps> = ({ editor }) => {
 				.extendMarkRange('link')
 				.insertContent({
 					type: 'text',
-					text: text || url,
+					text: text ?? url,
 					marks: [
 						{
 							type: 'link',

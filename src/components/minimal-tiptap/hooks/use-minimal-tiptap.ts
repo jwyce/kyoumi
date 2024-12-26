@@ -81,9 +81,6 @@ const createExtensions = (placeholder: string) => [
 				})
 			);
 		},
-		onImageRemoved({ id, src }) {
-			console.log('Image removed', { id, src });
-		},
 		onValidationError(errors) {
 			errors.forEach((error) => {
 				toast.error('Image validation error', {
@@ -187,10 +184,9 @@ export const useMinimalTiptapEditor = ({
 	onBlur,
 	...props
 }: UseMinimalTiptapEditorProps) => {
-	const throttledSetValue = useThrottle(
-		(value: Content) => onUpdate?.(value),
-		throttleDelay
-	);
+	const throttledSetValue = useThrottle((value) => {
+		if (onUpdate) onUpdate(value as Content);
+	}, throttleDelay);
 
 	const handleUpdate = React.useCallback(
 		(editor: Editor) => throttledSetValue(getOutput(editor, output)),

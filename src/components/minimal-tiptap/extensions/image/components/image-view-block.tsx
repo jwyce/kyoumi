@@ -1,3 +1,10 @@
+/* eslint-disable @next/next/no-img-element */
+/* eslint-disable @typescript-eslint/no-floating-promises */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import * as React from 'react';
 import { NodeViewWrapper } from '@tiptap/react';
 import { Info, Trash2 } from 'lucide-react';
@@ -205,7 +212,7 @@ export const ImageViewBlock: React.FC<NodeViewProps> = ({
 				}));
 
 				updateAttributes(normalizedData);
-			} catch (error) {
+			} catch {
 				setImageState((prev) => ({
 					...prev,
 					error: true,

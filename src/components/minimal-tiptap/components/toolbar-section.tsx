@@ -105,7 +105,7 @@ export const ToolbarSection: React.FC<ToolbarSectionProps> = ({
 							size={size}
 							variant={variant}
 						>
-							{dropdownIcon || <ChevronDown className="size-5" />}
+							{dropdownIcon ?? <ChevronDown className="size-5" />}
 						</ToolbarButton>
 					</DropdownMenuTrigger>
 					<DropdownMenuContent align="start" className="w-full">
