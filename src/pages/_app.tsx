@@ -30,7 +30,7 @@ const MyApp: AppType = ({ Component, pageProps }) => {
 				<meta property="og:type" content="website" />
 				<meta
 					property="og:image"
-					content="https://kyoumi.vercel.app/kyoumi.png"
+					content="https://kyoumi.vercel.app/logo.svg"
 				/>
 				<link rel="icon" href="/logo.svg" />
 			</Head>
