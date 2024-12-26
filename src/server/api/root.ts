@@ -1,7 +1,7 @@
 import { authRouter } from '@/server/api/routers/auth';
+import { helperRouter } from '@/server/api/routers/helper';
 import { postRouter } from '@/server/api/routers/post';
 import { createCallerFactory, createTRPCRouter } from '@/server/api/trpc';
-import { helperRouter } from './routers/helperRouter';
 
 /**
  * This is the primary router for your server.
