@@ -6,10 +6,12 @@
  * TL;DR - This is where all the tRPC server stuff is created and plugged in. The pieces you will
  * need to use are documented accordingly near the end.
  */
+import { env } from '@/env';
 import { db } from '@/server/db';
 import { initTRPC, TRPCError } from '@trpc/server';
 import { type CreateNextContextOptions } from '@trpc/server/adapters/next';
 import { eq } from 'drizzle-orm';
+import { Meilisearch } from 'meilisearch';
 import { parseCookies } from 'oslo/cookie';
 import superjson from 'superjson';
 import { ZodError } from 'zod';
@@ -38,8 +40,14 @@ type CreateContextOptions = {
  * @see https://create.t3.gg/en/usage/trpc#-serverapitrpcts
  */
 const createInnerTRPCContext = (opts: CreateContextOptions) => {
+	const meilisearch = new Meilisearch({
+		host: env.MEILI_HOST,
+		apiKey: env.MEILI_MASTER_KEY,
+	});
+
 	return {
 		userId: opts.userId,
+		meilisearch,
 		db,
 	};
 };

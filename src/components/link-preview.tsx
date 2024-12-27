@@ -125,15 +125,17 @@ function Extras({ preview }: { preview: Preview }) {
 			<div className="line-clamp-2 text-muted-foreground">
 				{preview.description}
 			</div>
-			{preview.image && (
-				<NextImage
-					src={preview.image}
-					alt={preview.title}
-					width={340}
-					height={340}
-					className="rounded-md"
-				/>
-			)}
+			<div className="">
+				{preview.image && (
+					<NextImage
+						src={preview.image}
+						alt={preview.title}
+						width={340}
+						height={340}
+						className="max-h-[220px] rounded-md object-contain"
+					/>
+				)}
+			</div>
 		</>
 	);
 }

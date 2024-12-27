@@ -3,8 +3,10 @@ import { bookmarks, likes, posts, users } from '@/server/db/schema';
 import { TRPCError } from '@trpc/server';
 import { and, eq } from 'drizzle-orm';
 import { getLinkPreview } from 'link-preview-js';
+import pmap, { pMapSkip } from 'p-map';
 import { z } from 'zod';
 import type { Content } from '@tiptap/react';
+import type { InferSelectModel } from 'drizzle-orm';
 import { extractTiptapLinks } from '@/utils/extractTiptapLinks';
 import {
 	getPaginatedHotPosts,
@@ -18,6 +20,8 @@ const topicSchema = z.enum([
 	'improvement',
 	'fun',
 ]);
+
+type Post = InferSelectModel<typeof posts>;
 
 export const postRouter = createTRPCRouter({
 	getPost: protectedProcedure
@@ -44,6 +48,17 @@ export const postRouter = createTRPCRouter({
 				likedByMe: !!likes.find((l) => l.authorId === ctx.userId),
 				bookmarkedByMe: !!bookmarks.find((l) => l.authorId === ctx.userId),
 			};
+		}),
+	search: protectedProcedure
+		.input(z.object({ query: z.string() }))
+		.query(async ({ input, ctx }) => {
+			const index = ctx.meilisearch.index('posts');
+
+			const results = await index.search(input.query, {
+				filter: ['cloak = false'],
+			});
+
+			return results.hits as Post[];
 		}),
 	getPosts: protectedProcedure
 		.input(
@@ -78,8 +93,16 @@ export const postRouter = createTRPCRouter({
 
 			const links = extractTiptapLinks(post.content as Content);
 
-			const previews = await Promise.all(
-				links.map(async (link) => await getLinkPreview(link))
+			const previews = await pmap(
+				links,
+				async (link) => {
+					try {
+						return await getLinkPreview(link);
+					} catch {
+						return pMapSkip;
+					}
+				},
+				{ concurrency: links.length }
 			);
 
 			return previews
@@ -115,19 +138,19 @@ export const postRouter = createTRPCRouter({
 			})
 		)
 		.mutation(async ({ input, ctx }) => {
-			const post = (
-				await ctx.db
-					.insert(posts)
-					.values({
-						title: input.title,
-						topic: input.topic,
-						content: input.content,
-						authorId: ctx.userId,
-					})
-					.returning({ slug: posts.slug })
-			)[0];
+			const post = await ctx.db
+				.insert(posts)
+				.values({
+					title: input.title,
+					topic: input.topic,
+					content: input.content,
+					authorId: ctx.userId,
+				})
+				.returning();
+			const index = ctx.meilisearch.index('posts');
+			await index.addDocuments(post);
 
-			return post;
+			return post[0];
 		}),
 	edit: protectedProcedure
 		.input(
@@ -155,10 +178,16 @@ export const postRouter = createTRPCRouter({
 				throw new TRPCError({ code: 'UNAUTHORIZED' });
 			}
 
-			await ctx.db
+			const newPost = await ctx.db
 				.update(posts)
 				.set({ ...rest })
-				.where(eq(posts.id, id));
+				.where(eq(posts.id, id))
+				.returning();
+
+			const index = ctx.meilisearch.index('posts');
+			await index.addDocuments(newPost);
+
+			return newPost[0];
 		}),
 	like: protectedProcedure
 		.input(z.object({ id: z.number() }))
@@ -247,9 +276,15 @@ export const postRouter = createTRPCRouter({
 				throw new TRPCError({ code: 'UNAUTHORIZED' });
 			}
 
-			await ctx.db
+			const newPost = await ctx.db
 				.update(posts)
 				.set({ cloak: true })
-				.where(eq(posts.id, input.id));
+				.where(eq(posts.id, input.id))
+				.returning();
+
+			const index = ctx.meilisearch.index('posts');
+			await index.addDocuments(newPost);
+
+			return newPost[0];
 		}),
 });

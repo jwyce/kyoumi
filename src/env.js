@@ -9,6 +9,8 @@ export const env = createEnv({
 	server: {
 		TURSO_CONNECTION_URL: z.string().url(),
 		TURSO_AUTH_TOKEN: z.string(),
+		MEILI_HOST: z.string().url(),
+		MEILI_MASTER_KEY: z.string(),
 		UPLOADTHING_TOKEN: z.string(),
 		PASSWORD: z.string(),
 		NODE_ENV: z
@@ -32,6 +34,8 @@ export const env = createEnv({
 	runtimeEnv: {
 		TURSO_CONNECTION_URL: process.env.TURSO_CONNECTION_URL,
 		TURSO_AUTH_TOKEN: process.env.TURSO_AUTH_TOKEN,
+		MEILI_HOST: process.env.MEILI_HOST,
+		MEILI_MASTER_KEY: process.env.MEILI_MASTER_KEY,
 		UPLOADTHING_TOKEN: process.env.UPLOADTHING_TOKEN,
 		PASSWORD: process.env.PASSWORD,
 		NODE_ENV: process.env.NODE_ENV,

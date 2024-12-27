@@ -28,6 +28,8 @@ export default function Edit() {
 	const params = useParams();
 	const router = useRouter();
 
+	const utils = api.useUtils();
+
 	const edit = api.post.edit.useMutation();
 
 	const [title, setTitle] = useState<string | undefined>();
@@ -125,6 +127,7 @@ export default function Edit() {
 								return;
 							}
 							await edit.mutateAsync({ id: post.id, title, topic, content });
+							await utils.post.getPost.invalidate({ slug: post.slug! });
 							router.push(`/post/${post.slug}`);
 							toast.success('Post saved');
 						}}
