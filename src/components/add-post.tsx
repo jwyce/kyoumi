@@ -48,7 +48,7 @@ export const AddPostButton = ({ children }: Props) => {
 	return (
 		<Dialog open={open} onOpenChange={(v) => setOpen(v)}>
 			<DialogTrigger asChild>{children}</DialogTrigger>
-			<DialogContent>
+			<DialogContent className='p-4 sm:p-6'>
 				<DialogHeader>
 					<DialogTitle>Create a new post</DialogTitle>
 					<DialogDescription>
@@ -56,9 +56,11 @@ export const AddPostButton = ({ children }: Props) => {
 					</DialogDescription>
 				</DialogHeader>
 				<div className="flex flex-col items-center gap-4">
-					<div className="flex w-full gap-4">
+					<div className="flex w-full flex-col gap-2 sm:flex-row sm:gap-4">
 						<div className="flex w-full flex-col gap-2">
-							<Label htmlFor="title">Title</Label>
+							<Label htmlFor="title" className="hidden sm:block">
+								Title
+							</Label>
 							<Input
 								id="title"
 								placeholder="Title"
@@ -68,12 +70,14 @@ export const AddPostButton = ({ children }: Props) => {
 						</div>
 
 						<div className="flex w-full flex-1 flex-col gap-2">
-							<Label htmlFor="topic">Topic</Label>
+							<Label htmlFor="topic" className="hidden sm:block">
+								Topic
+							</Label>
 							<Select
 								value={topic}
 								onValueChange={(v) => setTopic(v as PostCreateInput['topic'])}
 							>
-								<SelectTrigger className="w-[180px]" id="topic">
+								<SelectTrigger className="sm:w-[180px]" id="topic">
 									<SelectValue placeholder="Select a topic" />
 								</SelectTrigger>
 								<SelectContent>
@@ -93,7 +97,7 @@ export const AddPostButton = ({ children }: Props) => {
 					<MinimalTiptapEditor
 						value={content}
 						onChange={setContent}
-						className="w-full"
+						className="w-[calc(100vw-2rem)] sm:w-full"
 						editorContentClassName="p-5"
 						output="json"
 						placeholder="What's up?"
@@ -106,6 +110,7 @@ export const AddPostButton = ({ children }: Props) => {
 				<DialogFooter>
 					<Button
 						type="submit"
+						disabled={post.isPending}
 						onClick={async () => {
 							if (!title || !topic || !content) {
 								toast.error('Please fill in all fields');

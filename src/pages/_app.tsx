@@ -5,6 +5,8 @@ import '@/styles/globals.css';
 import '@/components/minimal-tiptap/styles/index.css';
 import Head from 'next/head';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { Analytics } from '@vercel/analytics/next';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Toaster } from '@/components/ui/sonner';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { SiteHeader } from '@/components/site-header';
@@ -46,6 +48,8 @@ const MyApp: AppType = ({ Component, pageProps }) => {
 							<SiteHeader />
 							<Component {...pageProps} />
 							<Toaster richColors />
+							<Analytics />
+							<SpeedInsights />
 						</TooltipProvider>
 					</ThemeProvider>
 				</QueryClientProvider>

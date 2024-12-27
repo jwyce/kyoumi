@@ -29,30 +29,31 @@ export default function Login() {
 	const login = api.auth.login.useMutation();
 
 	return (
-		<div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-gradient-to-b from-fuchsia-950 via-neutral-950 to-neutral-950">
-			<div className="flex items-center justify-center gap-2">
+		<div className="flex min-h-screen w-full flex-col items-center justify-center gap-4 bg-gradient-to-b from-fuchsia-950 via-neutral-950 to-neutral-950 px-4">
+			<div className="flex items-center justify-center sm:gap-2">
 				<Image
 					src="/logo.svg"
 					alt="logo"
 					width={200}
 					height={200}
-					className="rounded-md"
+					className="max-w-[150px] rounded-md sm:max-w-[200px]"
 				/>
 				<h1
-					className="bg-gradient-to-br bg-clip-text text-center text-9xl font-bold text-transparent"
+					className="bg-gradient-to-br bg-clip-text text-center text-8xl font-bold text-transparent sm:text-9xl"
 					style={{
 						backgroundImage:
 							'linear-gradient(to bottom right, white 20%, #ea3c7a 70%, #ac1c5b 80%)',
 					}}
 				>
-					<span className="block text-6xl">kyoumi</span>
+					<span className="block text-5xl sm:text-6xl">kyoumi</span>
 					<span className="block">興味</span>
 				</h1>
 			</div>
-			<p className="font-semibold text-muted-foreground">
+			<p className="text-center font-semibold text-muted-foreground">
 				explore your curiosity, share interests, discuss topics anonymously
 			</p>
 			<form
+				className="w-full px-8 sm:w-auto"
 				onSubmit={async (e) => {
 					e.preventDefault();
 					const user = await login.mutateAsync({ password });
@@ -61,14 +62,16 @@ export default function Login() {
 					}
 				}}
 			>
-				<div className="flex items-center gap-2">
+				<div className="flex w-full flex-col items-center gap-2 sm:w-auto sm:flex-row">
 					<Input
 						type="password"
 						placeholder="Password"
 						value={password}
 						onChange={(e) => setPassword(e.target.value)}
 					/>
-					<Button type="submit">Login</Button>
+					<Button type="submit" className="w-full sm:w-auto">
+						Login
+					</Button>
 				</div>
 			</form>
 		</div>

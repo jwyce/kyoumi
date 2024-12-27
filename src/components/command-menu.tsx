@@ -110,7 +110,7 @@ export function CommandMenu({ ...props }: DialogProps) {
 								>
 									<div className="flex flex-col">
 										<div className="flex items-center gap-4">
-											<span>{post.title}</span>
+											<span className="truncate">{post.title}</span>
 											{post.complete && (
 												<CheckCircle
 													className="stroke-green-600 dark:stroke-green-300"

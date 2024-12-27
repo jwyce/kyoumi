@@ -107,7 +107,7 @@ export function ExploreCard({
 	return (
 		<Card
 			className={cn(
-				`group/card relative overflow-hidden bg-background duration-300 hover:bg-card-hovered sm:min-w-[420px] xl:min-w-[450px] ${BORDERS_BY_TOPIC[post.topic]}`,
+				`group/card relative min-w-[300px] overflow-hidden bg-background duration-300 hover:bg-card-hovered sm:min-w-[420px] xl:min-w-[450px] ${BORDERS_BY_TOPIC[post.topic]}`,
 				className
 			)}
 		>
@@ -116,8 +116,8 @@ export function ExploreCard({
 				<CardTitle className="max-w-[75%] truncate text-2xl duration-300">
 					{post.title}
 				</CardTitle>
-				<div className="flex flex-col gap-1">
-					<div className="flex items-center gap-5 text-center duration-300">
+				<div className="flex flex-col sm:gap-1">
+					<div className="flex items-center gap-2 text-center duration-300 sm:gap-5">
 						<TopicBadge topic={post.topic} />
 						{post.complete && (
 							<Tooltip>

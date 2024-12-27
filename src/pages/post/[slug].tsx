@@ -54,7 +54,7 @@ export default function Post() {
 				<div>
 					<div className="text-2xl font-bold">{post.title}</div>
 					<div className="flex flex-col gap-1">
-						<div className="flex items-center gap-5 text-center duration-300">
+						<div className="flex items-center gap-2 sm:gap-5 text-center duration-300">
 							<TopicBadge topic={post.topic} />
 							{post.complete && (
 								<Tooltip>
@@ -94,7 +94,7 @@ export default function Post() {
 						items={previews}
 						config={{
 							columns: [1, 2, 3],
-							gap: [6, 12, 24],
+							gap: [12, 12, 24],
 							media: [820, 1800, 1920],
 							useBalancedLayout: true,
 						}}

@@ -48,8 +48,11 @@ export function MobileNav() {
 						<MobileLink href="/explore" onOpenChange={onOpenChange}>
 							Explore
 						</MobileLink>
-						<MobileLink href="/explore" onOpenChange={onOpenChange}>
-							Archive
+						<MobileLink href="/bookmarks" onOpenChange={onOpenChange}>
+							Bookmarks
+						</MobileLink>
+						<MobileLink href="/completed" onOpenChange={onOpenChange}>
+							Completed
 						</MobileLink>
 					</div>
 				</div>

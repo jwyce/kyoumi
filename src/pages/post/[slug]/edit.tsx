@@ -72,7 +72,7 @@ export default function Edit() {
 				<title>edit - {post.title} | kyoumi</title>
 			</Head>
 			<div className="mx-auto mt-4 flex w-full flex-col items-center gap-4 px-4 pb-8 lg:w-2/3">
-				<div className="flex w-full gap-4">
+				<div className="flex w-full flex-col gap-4 sm:flex-row">
 					<div className="flex w-full flex-col gap-2">
 						<Label htmlFor="title">Title</Label>
 						<Input
@@ -89,7 +89,7 @@ export default function Edit() {
 							value={topic}
 							onValueChange={(v) => setTopic(v as PostCreateInput['topic'])}
 						>
-							<SelectTrigger className="w-[180px]" id="topic">
+							<SelectTrigger className="sm:w-[180px]" id="topic">
 								<SelectValue placeholder="Select a topic" />
 							</SelectTrigger>
 							<SelectContent>
@@ -131,6 +131,7 @@ export default function Edit() {
 							router.push(`/post/${post.slug}`);
 							toast.success('Post saved');
 						}}
+						disabled={edit.isPending}
 					>
 						Save post
 					</Button>

@@ -60,7 +60,7 @@ export const Posts = ({ type, emptyMessage }: PostsProps) => {
 		);
 
 	return (
-		<div className="mt-4 min-h-[90vh] px-16 pb-8">
+		<div className="mt-4 min-h-[90vh] px-4 pb-8 sm:px-16">
 			<div className="flex items-center justify-end gap-2 pb-4">
 				<Combobox
 					fieldValue={topic}
@@ -115,7 +115,7 @@ export const Posts = ({ type, emptyMessage }: PostsProps) => {
 								key={post.slug}
 								href={`/post/${post.slug}`}
 								passHref
-								className="motion-preset-fade motion-preset-slide-up"
+								className="motion-preset-fade motion-preset-slide-up w-[calc(100vw-2rem)] sm:w-full"
 							>
 								<ExploreCard
 									post={post}

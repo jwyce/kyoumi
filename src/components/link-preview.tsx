@@ -52,29 +52,42 @@ export const LinkPreview = ({ preview, idx }: Props) => {
 				style={{ background: colors[idx] }}
 			/>
 			<div className="flex flex-col gap-1">
-				<div className="flex items-center gap-2 font-semibold">
-					{preview.favicon && (
+				<div className="flex items-center justify-between">
+					<div className="flex flex-col gap-1">
+						<div className="flex items-center gap-2 font-semibold">
+							{preview.favicon && (
+								<NextImage
+									src={preview.favicon}
+									alt={preview.title}
+									width={15}
+									height={15}
+									crossOrigin="anonymous"
+									onLoad={() => setImagesLoaded((prev) => prev + 1)}
+									ref={(el) => {
+										if (el) imageRefs.current[idx] = el;
+									}}
+								/>
+							)}
+							{preview.siteName}
+						</div>
+						<a
+							href={preview.url}
+							target="_blank"
+							className="text-link transition-colors duration-300 hover:text-link/80"
+						>
+							{preview.title}
+						</a>
+					</div>
+					{preview.image && (
 						<NextImage
-							src={preview.favicon}
+							src={preview.image}
 							alt={preview.title}
-							width={15}
-							height={15}
-							crossOrigin="anonymous"
-							onLoad={() => setImagesLoaded((prev) => prev + 1)}
-							ref={(el) => {
-								if (el) imageRefs.current[idx] = el;
-							}}
+							width={100}
+							height={100}
+							className="max-h-[65px] rounded-md object-contain sm:hidden"
 						/>
 					)}
-					{preview.siteName}
 				</div>
-				<a
-					href={preview.url}
-					target="_blank"
-					className="text-link transition-colors duration-300 hover:text-link/80"
-				>
-					{preview.title}
-				</a>
 				{preview && <Extras preview={preview} />}
 			</div>
 		</div>
@@ -125,14 +138,14 @@ function Extras({ preview }: { preview: Preview }) {
 			<div className="line-clamp-2 text-muted-foreground">
 				{preview.description}
 			</div>
-			<div className="">
+			<div>
 				{preview.image && (
 					<NextImage
 						src={preview.image}
 						alt={preview.title}
 						width={340}
 						height={340}
-						className="max-h-[220px] rounded-md object-contain"
+						className="hidden rounded-md object-contain sm:block sm:max-h-[220px]"
 					/>
 				)}
 			</div>
