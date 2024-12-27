@@ -48,7 +48,7 @@ export const AddPostButton = ({ children }: Props) => {
 	return (
 		<Dialog open={open} onOpenChange={(v) => setOpen(v)}>
 			<DialogTrigger asChild>{children}</DialogTrigger>
-			<DialogContent className='p-4 sm:p-6'>
+			<DialogContent className="p-4 sm:p-6">
 				<DialogHeader>
 					<DialogTitle>Create a new post</DialogTitle>
 					<DialogDescription>
