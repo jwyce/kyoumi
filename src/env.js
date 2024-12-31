@@ -11,6 +11,8 @@ export const env = createEnv({
 		TURSO_AUTH_TOKEN: z.string(),
 		MEILI_HOST: z.string().url(),
 		MEILI_MASTER_KEY: z.string(),
+		UPSTASH_REDIS_REST_URL: z.string().url(),
+		UPSTASH_REDIS_REST_TOKEN: z.string(),
 		UPLOADTHING_TOKEN: z.string(),
 		PASSWORD: z.string(),
 		NODE_ENV: z
@@ -37,6 +39,8 @@ export const env = createEnv({
 		MEILI_HOST: process.env.MEILI_HOST,
 		MEILI_MASTER_KEY: process.env.MEILI_MASTER_KEY,
 		UPLOADTHING_TOKEN: process.env.UPLOADTHING_TOKEN,
+		UPSTASH_REDIS_REST_URL: process.env.UPSTASH_REDIS_REST_URL,
+		UPSTASH_REDIS_REST_TOKEN: process.env.UPSTASH_REDIS_REST_TOKEN,
 		PASSWORD: process.env.PASSWORD,
 		NODE_ENV: process.env.NODE_ENV,
 		// NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
