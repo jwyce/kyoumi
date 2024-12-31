@@ -3,17 +3,34 @@ import { createTRPCRouter, publicProcedure } from '@/server/api/trpc';
 import { db } from '@/server/db';
 import { users } from '@/server/db/schema';
 import { TRPCError } from '@trpc/server';
+import { Ratelimit } from '@upstash/ratelimit';
+import { Redis } from '@upstash/redis';
 import { eq } from 'drizzle-orm';
 import { serializeCookie } from 'oslo/cookie';
 import { z } from 'zod';
+
+// Create a new ratelimiter, that allows 3 requests per 1 minute
+const ratelimit = new Ratelimit({
+	redis: Redis.fromEnv(),
+	limiter: Ratelimit.slidingWindow(3, '1 m'),
+	analytics: true,
+});
 
 export const authRouter = createTRPCRouter({
 	login: publicProcedure
 		.input(z.object({ password: z.string() }))
 		.mutation(async ({ input, ctx }) => {
+			const forwarded = ctx.req.headers['x-forwarded-for'] as string;
+			const ip = forwarded
+				? forwarded.split(',')[0]!
+				: ctx.req.socket.remoteAddress!;
+
+			const { success } = await ratelimit.limit(ip);
+			if (!success) throw new TRPCError({ code: 'TOO_MANY_REQUESTS' });
+
 			if (input.password !== env.PASSWORD) {
 				throw new TRPCError({
-					code: 'FORBIDDEN',
+					code: 'UNAUTHORIZED',
 					message: 'Invalid password',
 				});
 			}

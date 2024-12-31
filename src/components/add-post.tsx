@@ -1,10 +1,12 @@
-import { useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
 import { toast } from 'sonner';
 import type { AppRouter } from '@/server/api/root';
 import type { Content } from '@tiptap/react';
 import type { inferRouterInputs } from '@trpc/server';
 import { api } from '@/utils/api';
+import { topicFilterOptions } from '@/lib/topicFilterOptions';
+import { getRandomTopicPrompt } from '@/lib/topicPromptMap';
 import { Button } from '@/components/ui/button';
 import {
 	Dialog,
@@ -41,6 +43,8 @@ export const AddPostButton = ({ children }: Props) => {
 	const [title, setTitle] = useState<string | undefined>();
 	const [topic, setTopic] = useState<PostCreateInput['topic'] | undefined>();
 	const [content, setContent] = useState<Content>(null);
+
+	const topicPrompt = useMemo(() => getRandomTopicPrompt(topic), [topic]);
 
 	const post = api.post.create.useMutation();
 	const router = useRouter();
@@ -83,11 +87,17 @@ export const AddPostButton = ({ children }: Props) => {
 								<SelectContent>
 									<SelectGroup>
 										<SelectLabel>Topics</SelectLabel>
-										<SelectItem value="fun">Fun</SelectItem>
-										<SelectItem value="new-idea">New Idea</SelectItem>
-										<SelectItem value="brown-bag">Brown Bag</SelectItem>
-										<SelectItem value="pain-point">Pain Point</SelectItem>
-										<SelectItem value="improvement">Improvement</SelectItem>
+										{topicFilterOptions
+											.filter((x) => x.value !== 'all')
+											.map((option) => (
+												<SelectItem key={option.value} value={option.value}>
+													<div className="flex items-center gap-2">
+														{option.addornment}
+
+														{option.label}
+													</div>
+												</SelectItem>
+											))}
 									</SelectGroup>
 								</SelectContent>
 							</Select>
@@ -100,11 +110,11 @@ export const AddPostButton = ({ children }: Props) => {
 						className="w-[calc(100vw-2rem)] sm:w-full"
 						editorContentClassName="p-5"
 						output="json"
-						placeholder="What's up?"
+						placeholder={topicPrompt}
 						autofocus={true}
 						editable={true}
 						immediatelyRender={false}
-						editorClassName="focus:outline-none overflow-y-auto max-h-[300px]"
+						editorClassName="focus:outline-none overflow-y-auto min-h-[200px] max-h-[300px]"
 					/>
 				</div>
 				<DialogFooter>

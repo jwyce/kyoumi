@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import Head from 'next/head';
 import { useParams, useRouter } from 'next/navigation';
 import { toast } from 'sonner';
@@ -6,6 +6,8 @@ import type { AppRouter } from '@/server/api/root';
 import type { Content, Editor } from '@tiptap/react';
 import type { inferRouterInputs } from '@trpc/server';
 import { api } from '@/utils/api';
+import { topicFilterOptions } from '@/lib/topicFilterOptions';
+import { getRandomTopicPrompt } from '@/lib/topicPromptMap';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -35,6 +37,8 @@ export default function Edit() {
 	const [title, setTitle] = useState<string | undefined>();
 	const [topic, setTopic] = useState<PostCreateInput['topic'] | undefined>();
 	const [content, setContent] = useState<Content>(null);
+
+	const topicPrompt = useMemo(() => getRandomTopicPrompt(topic), [topic]);
 
 	const { data: post, isLoading } = api.post.getPost.useQuery(
 		{ slug: params?.slug as string },
@@ -95,11 +99,17 @@ export default function Edit() {
 							<SelectContent>
 								<SelectGroup>
 									<SelectLabel>Topics</SelectLabel>
-									<SelectItem value="fun">Fun</SelectItem>
-									<SelectItem value="new-idea">New Idea</SelectItem>
-									<SelectItem value="brown-bag">Brown Bag</SelectItem>
-									<SelectItem value="pain-point">Pain Point</SelectItem>
-									<SelectItem value="improvement">Improvement</SelectItem>
+									{topicFilterOptions
+										.filter((x) => x.value !== 'all')
+										.map((option) => (
+											<SelectItem key={option.value} value={option.value}>
+												<div className="flex items-center gap-2">
+													{option.addornment}
+
+													{option.label}
+												</div>
+											</SelectItem>
+										))}
 								</SelectGroup>
 							</SelectContent>
 						</Select>
@@ -112,7 +122,7 @@ export default function Edit() {
 					className="w-full"
 					editorContentClassName="p-5"
 					output="json"
-					placeholder="What's up?"
+					placeholder={topicPrompt}
 					autofocus={true}
 					editable={true}
 					immediatelyRender={false}

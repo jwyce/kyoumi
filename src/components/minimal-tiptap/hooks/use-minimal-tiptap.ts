@@ -217,11 +217,22 @@ export const useMinimalTiptapEditor = ({
 				class: cn('focus:outline-none', editorClassName),
 			},
 		},
+
 		onUpdate: ({ editor }) => handleUpdate(editor),
 		onCreate: ({ editor }) => handleCreate(editor),
 		onBlur: ({ editor }) => handleBlur(editor),
 		...props,
 	});
+
+	React.useEffect(() => {
+		if (editor !== null && placeholder !== '') {
+			const opts = editor.extensionManager.extensions.find(
+				(extension) => extension.name === 'placeholder'
+			)?.options as { placeholder: string };
+			opts.placeholder = placeholder;
+			editor.view.dispatch(editor.state.tr);
+		}
+	}, [editor, placeholder]);
 
 	return editor;
 };
