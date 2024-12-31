@@ -8,7 +8,6 @@ export const topicPromptMap: Record<Topic, string[]> = {
 		"What's the next cool event—Advent of Code, hackathons, or something better?",
 		'Suggest a tech conference or meetup we need to check out.',
 		'What’s funnier than struggling to vertically center a div with CSS?',
-		'Suggest a tech conference or meetup we need to check out.',
 		'What’s a guild activity or team-building idea that’s too good to miss?',
 	],
 	improvement: [
