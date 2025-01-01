@@ -10,7 +10,7 @@ import { toast } from 'sonner';
 import type { Content, Editor, UseEditorOptions } from '@tiptap/react';
 import { cn } from '@/lib/utils';
 import {
-	CodeBlockLowlight,
+	CodeBlockShiki,
 	Color,
 	FileHandler,
 	HorizontalRule,
@@ -33,6 +33,7 @@ export interface UseMinimalTiptapEditorProps extends UseEditorOptions {
 	onBlur?: (content: Content) => void;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unsafe-return
 const createExtensions = (placeholder: string) => [
 	StarterKit.configure({
 		horizontalRule: false,
@@ -170,7 +171,7 @@ const createExtensions = (placeholder: string) => [
 	UnsetAllMarks,
 	HorizontalRule,
 	ResetMarksOnEnter,
-	CodeBlockLowlight,
+	CodeBlockShiki,
 	Placeholder.configure({ placeholder: () => placeholder }),
 ];
 
