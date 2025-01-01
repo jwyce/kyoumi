@@ -6,11 +6,12 @@ import { Typography } from '@tiptap/extension-typography';
 import { Underline } from '@tiptap/extension-underline';
 import { useEditor } from '@tiptap/react';
 import { StarterKit } from '@tiptap/starter-kit';
+import { useTheme } from 'next-themes';
 import { toast } from 'sonner';
+import CodeBlockShiki from 'tiptap-extension-code-block-shiki';
 import type { Content, Editor, UseEditorOptions } from '@tiptap/react';
 import { cn } from '@/lib/utils';
 import {
-	CodeBlockShiki,
 	Color,
 	FileHandler,
 	HorizontalRule,
@@ -34,7 +35,7 @@ export interface UseMinimalTiptapEditorProps extends UseEditorOptions {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-const createExtensions = (placeholder: string) => [
+const createExtensions = (placeholder: string, theme?: string) => [
 	StarterKit.configure({
 		horizontalRule: false,
 		codeBlock: false,
@@ -171,7 +172,12 @@ const createExtensions = (placeholder: string) => [
 	UnsetAllMarks,
 	HorizontalRule,
 	ResetMarksOnEnter,
-	CodeBlockShiki,
+	CodeBlockShiki.configure({
+		defaultTheme: theme === 'dark' ? 'rose-pine' : 'rose-pine-dawn',
+		HTMLAttributes: {
+			class: 'block-node',
+		},
+	}),
 	Placeholder.configure({ placeholder: () => placeholder }),
 ];
 
@@ -185,6 +191,8 @@ export const useMinimalTiptapEditor = ({
 	onBlur,
 	...props
 }: UseMinimalTiptapEditorProps) => {
+	const { theme, systemTheme } = useTheme();
+
 	const throttledSetValue = useThrottle((value) => {
 		if (onUpdate) onUpdate(value as Content);
 	}, throttleDelay);
@@ -209,7 +217,10 @@ export const useMinimalTiptapEditor = ({
 	);
 
 	const editor = useEditor({
-		extensions: createExtensions(placeholder),
+		extensions: createExtensions(
+			placeholder,
+			theme === 'system' ? systemTheme : theme
+		),
 		editorProps: {
 			attributes: {
 				autocomplete: 'off',
@@ -226,14 +237,26 @@ export const useMinimalTiptapEditor = ({
 	});
 
 	React.useEffect(() => {
-		if (editor !== null && placeholder !== '') {
-			const opts = editor.extensionManager.extensions.find(
-				(extension) => extension.name === 'placeholder'
-			)?.options as { placeholder: string };
-			opts.placeholder = placeholder;
+		if (editor !== null) {
+			if (placeholder !== '') {
+				const opts = editor.extensionManager.extensions.find(
+					(extension) => extension.name === 'placeholder'
+				)?.options as { placeholder: string };
+				opts.placeholder = placeholder;
+			}
+
+			if (theme) {
+				const opts = editor.extensionManager.extensions.find(
+					(extension) => extension.name === 'codeBlock'
+				)?.options as { defaultTheme: string };
+				const isDark =
+					theme === 'system' ? systemTheme === 'dark' : theme === 'dark';
+				opts.defaultTheme = isDark ? 'rose-pine' : 'rose-pine-dawn';
+			}
+
 			editor.view.dispatch(editor.state.tr);
 		}
-	}, [editor, placeholder]);
+	}, [editor, placeholder, theme, systemTheme]);
 
 	return editor;
 };

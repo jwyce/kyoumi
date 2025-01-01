@@ -1,4 +1,3 @@
-export * from './code-block-shiki';
 export * from './color';
 export * from './file-handler';
 export * from './horizontal-rule';
