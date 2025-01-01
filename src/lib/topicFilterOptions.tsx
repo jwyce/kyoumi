@@ -23,7 +23,7 @@ export const topicFilterOptions: SelectOption[] = [
 	},
 	{
 		value: 'pain-point',
-		label: 'Paint Point',
+		label: 'Pain Point',
 		addornment: <div className="h-4 w-4 rounded-full bg-topic-pain-point" />,
 	},
 	{
