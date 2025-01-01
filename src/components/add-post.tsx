@@ -114,7 +114,7 @@ export const AddPostButton = ({ children }: Props) => {
 						autofocus={true}
 						editable={true}
 						immediatelyRender={false}
-						editorClassName="focus:outline-none overflow-y-auto min-h-[200px] max-h-[300px]"
+						editorClassName="post-create focus:outline-none overflow-y-auto min-h-[200px] max-h-[300px]"
 					/>
 				</div>
 				<DialogFooter>

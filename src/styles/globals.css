@@ -198,6 +198,6 @@
 	margin: 0 !important;
 }
 
-pre.block-node {
-	@apply max-h-full max-w-full overflow-auto sm:max-h-[300px] sm:min-h-[200px] sm:max-w-[580px];
+div.post-create > pre.block-node {
+	@apply max-h-[300px] min-h-[200px] max-w-[580px] overflow-auto;
 }
