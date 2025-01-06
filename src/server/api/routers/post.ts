@@ -92,6 +92,7 @@ export const postRouter = createTRPCRouter({
 			}
 
 			const links = extractTiptapLinks(post.content as Content);
+			if (links.length === 0) return [];
 
 			const previews = await pmap(
 				links,
