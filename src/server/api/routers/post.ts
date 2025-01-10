@@ -99,7 +99,7 @@ export const postRouter = createTRPCRouter({
 				async (link) => {
 					try {
 						return await getLinkPreview(link, {
-							headers: { 'User-Agent': 'google-bot' },
+							headers: { 'user-agent': 'Twitterbot' },
 						});
 					} catch {
 						return pMapSkip;
