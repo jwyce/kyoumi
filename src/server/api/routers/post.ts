@@ -119,6 +119,8 @@ export const postRouter = createTRPCRouter({
 							favicons: string[];
 						};
 
+					console.log({ previews });
+
 					const newTitle = title.replace(/\s[\-\/|>]+\s.*$/, '').trim();
 
 					return {

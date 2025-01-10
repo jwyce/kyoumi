@@ -54,7 +54,7 @@ export default function Post() {
 				<div>
 					<div className="text-2xl font-bold">{post.title}</div>
 					<div className="flex flex-col gap-1">
-						<div className="flex items-center gap-2 sm:gap-5 text-center duration-300">
+						<div className="flex items-center gap-2 text-center duration-300 sm:gap-5">
 							<TopicBadge topic={post.topic} />
 							{post.complete && (
 								<Tooltip>
